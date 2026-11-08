@@ -42,19 +42,27 @@ _SCRYPT_MAXMEM = 2**27  # 128 MiB: 128 * r * n bytes plus headroom
 
 def config_dir() -> Path:
     """``$XDG_CONFIG_HOME/nyms`` or ``~/.config/nyms``."""
-    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
+        os.path.expanduser("~"), ".config"
+    )
     return Path(base) / "nyms"
 
 
 def data_dir() -> Path:
     """``$XDG_DATA_HOME/nyms`` or ``~/.local/share/nyms``: where mapping stores live by default."""
-    base = os.environ.get("XDG_DATA_HOME") or os.path.join(os.path.expanduser("~"), ".local", "share")
+    base = os.environ.get("XDG_DATA_HOME") or os.path.join(
+        os.path.expanduser("~"), ".local", "share"
+    )
     return Path(base) / "nyms"
 
 
 def key_path(project: str, *, key_dir: str | os.PathLike | None = None) -> Path:
     _check_project_name(project)
-    return Path(key_dir) / f"{project}.key" if key_dir else config_dir() / "keys" / f"{project}.key"
+    return (
+        Path(key_dir) / f"{project}.key"
+        if key_dir
+        else config_dir() / "keys" / f"{project}.key"
+    )
 
 
 _PROJECT_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
@@ -92,7 +100,15 @@ def decode_key(text: str) -> bytes:
 
 def derive_key(passphrase: str, *, salt: bytes, length: int = KEY_BYTES) -> bytes:
     """scrypt key derivation (stdlib). Argon2id is the replacement when ``argon2-cffi`` is wanted."""
-    return hashlib.scrypt(passphrase.encode("utf-8"), salt=salt, n=_SCRYPT_N, r=_SCRYPT_R, p=_SCRYPT_P, maxmem=_SCRYPT_MAXMEM, dklen=length)
+    return hashlib.scrypt(
+        passphrase.encode("utf-8"),
+        salt=salt,
+        n=_SCRYPT_N,
+        r=_SCRYPT_R,
+        p=_SCRYPT_P,
+        maxmem=_SCRYPT_MAXMEM,
+        dklen=length,
+    )
 
 
 def _write_private(path: Path, data: bytes) -> None:

@@ -52,7 +52,15 @@ from collections.abc import Iterable, MutableMapping
 from dataclasses import dataclass, field
 from functools import cached_property
 
-from nyms.detect import DetectorLike, default_detectors, detect, detect_raw, detector_name, known_values_detectors, normalise_text
+from nyms.detect import (
+    DetectorLike,
+    default_detectors,
+    detect,
+    detect_raw,
+    detector_name,
+    known_values_detectors,
+    normalise_text,
+)
 from nyms.keys import resolve_key
 from nyms.mapping import MappingStore, canon, encrypted, local_mapping_store, normalise
 from nyms.policy import Policy
@@ -82,7 +90,10 @@ class Result:
     @property
     def mapping(self) -> dict[str, str]:
         """``{surrogate: original}`` for this run only. Sensitive."""
-        return {sur: span.text for span, sur in [*self.replacements, *self.post_replacements]}
+        return {
+            sur: span.text
+            for span, sur in [*self.replacements, *self.post_replacements]
+        }
 
 
 @dataclass
@@ -116,14 +127,18 @@ class Pseudonymiser:
         self.policy = Policy.default() if policy is None else policy
         self._key = key
         self.names = [n for n in names if n and n.strip()]
-        self.detectors = list(default_detectors(names=self.names) if detectors is None else detectors)
+        self.detectors = list(
+            default_detectors(names=self.names) if detectors is None else detectors
+        )
         self.post_detectors = list(post_detectors)
         if prefilter:
             self.detectors = self.policy.detector_filter(self.detectors)
         if store is None:
             codec = encrypted(self.key) if encrypt else None
             store = local_mapping_store(project, rootdir=rootdir, codec=codec)
-        self.mapping = MappingStore(store, strategy=Counter() if strategy is None else strategy)
+        self.mapping = MappingStore(
+            store, strategy=Counter() if strategy is None else strategy
+        )
 
     @cached_property
     def key(self) -> bytes:
@@ -144,20 +159,38 @@ class Pseudonymiser:
         # Pass 2: the same, now knowing this document's new values, so every occurrence is
         # consistent; a span pass 1 attributed to a real detector keeps that attribution.
         first = {(s.start, s.end): s for s in replaced}
-        replaced, kept = self._decide(text, self.detectors + known_values_detectors(self.mapping, extra_names=self.names))
-        replaced = [first.get((s.start, s.end), s) if s.detector == "known_values" else s for s in replaced]
+        replaced, kept = self._decide(
+            text,
+            self.detectors
+            + known_values_detectors(self.mapping, extra_names=self.names),
+        )
+        replaced = [
+            first.get((s.start, s.end), s) if s.detector == "known_values" else s
+            for s in replaced
+        ]
         replacements = self._replacements(replaced)
         out = apply_replacements(text, replacements)
         # Stage 2: detectors that run on the pseudonymised text (the model pass seam).
         post_replacements: list[tuple[Span, str]] = []
         if self.post_detectors:
             protect = known_values_detectors(self.mapping)
-            post_replaced, post_kept = self._decide(out, list(self.post_detectors) + protect)
+            post_replaced, post_kept = self._decide(
+                out, list(self.post_detectors) + protect
+            )
             post_replaced = [s for s in post_replaced if s.detector != "known_values"]
             post_replacements = self._replacements(post_replaced)
             out = apply_replacements(out, post_replacements)
-            kept = kept + [k for k in post_kept if k.detector not in ("known_values", "surrogates")]
-        return Result(out, replaced, kept, replacements, self._report(replaced, kept, post_replacements), post_replacements)
+            kept = kept + [
+                k for k in post_kept if k.detector not in ("known_values", "surrogates")
+            ]
+        return Result(
+            out,
+            replaced,
+            kept,
+            replacements,
+            self._report(replaced, kept, post_replacements),
+            post_replacements,
+        )
 
     def _replacements(self, spans: list[Span]) -> list[tuple[Span, str]]:
         out = []
@@ -168,14 +201,25 @@ class Pseudonymiser:
             out.append((s, surrogate + ("" if s.value else suffix)))
         return out
 
-    def _decide(self, text: str, detectors: list[DetectorLike]) -> tuple[list[Span], list[Span]]:
+    def _decide(
+        self, text: str, detectors: list[DetectorLike]
+    ) -> tuple[list[Span], list[Span]]:
         """Resolve overlaps over every detector's spans, let the policy split them, then promote
         accepted spans nested inside kept ones (an identifier inside a kept URL)."""
         raw = detect_raw(text, detectors)
         winners = resolve_overlaps(raw)
-        accepted, rejected = self.policy.split(w for w in winners if w.entity_type != SURROGATE_TYPE)
+        accepted, rejected = self.policy.split(
+            w for w in winners if w.entity_type != SURROGATE_TYPE
+        )
         for k in rejected:
-            inner = [s for s in raw if _promotable(s) and k.contains(s) and s.length < k.length and self.policy.accepts(s)]
+            inner = [
+                s
+                for s in raw
+                if _promotable(s)
+                and k.contains(s)
+                and s.length < k.length
+                and self.policy.accepts(s)
+            ]
             accepted.extend(resolve_overlaps(inner))
         accepted = resolve_overlaps(accepted)
         kept = [k for k in rejected if not any(a.contains(k) for a in accepted)]
@@ -193,9 +237,15 @@ class Pseudonymiser:
         def sub(m: re.Match) -> str:
             nonlocal count
             hit = m.group(0)
-            original = exact.get(hit) if not hit.startswith("[") else by_canon.get(canon(hit))
+            original = (
+                exact.get(hit) if not hit.startswith("[") else by_canon.get(canon(hit))
+            )
             if original is None:
-                original = by_canon.get(canon(hit)) if hit.startswith("[") or _looks_bracketed(hit) else None
+                original = (
+                    by_canon.get(canon(hit))
+                    if hit.startswith("[") or _looks_bracketed(hit)
+                    else None
+                )
             if original is None:
                 return hit
             count += 1
@@ -207,10 +257,16 @@ class Pseudonymiser:
     def check(self, text: str) -> list[str]:
         """Originals from the mapping that occur in *text*: what would leak if it were sent."""
         text = normalise_text(text)
-        return [rec.original for rec in self.mapping.records() if _contains_value(text, rec.entity_type, rec.original)]
+        return [
+            rec.original
+            for rec in self.mapping.records()
+            if _contains_value(text, rec.entity_type, rec.original)
+        ]
 
     # -- reporting ------------------------------------------------------------
-    def _report(self, replaced: list[Span], kept: list[Span], post: list[tuple[Span, str]]) -> dict:
+    def _report(
+        self, replaced: list[Span], kept: list[Span], post: list[tuple[Span, str]]
+    ) -> dict:
         by_type: dict[str, int] = {}
         by_detector: dict[str, int] = {}
         for s in [*replaced, *(s for s, _ in post)]:
@@ -222,9 +278,20 @@ class Pseudonymiser:
             "replaced": len(replaced) + len(post),
             "replaced_by_type": dict(sorted(by_type.items())),
             "replaced_by_detector": dict(sorted(by_detector.items())),
-            "kept": [{"entity_type": s.entity_type, "text": s.text, "score": s.score, "detector": s.detector} for s in kept],
+            "kept": [
+                {
+                    "entity_type": s.entity_type,
+                    "text": s.text,
+                    "score": s.score,
+                    "detector": s.detector,
+                }
+                for s in kept
+            ],
             "distinct_values_in_project": len(self.mapping),
-            "detectors_run": sorted({detector_name(d) for d in self.detectors} | {"known_values", "known_components"}),
+            "detectors_run": sorted(
+                {detector_name(d) for d in self.detectors}
+                | {"known_values", "known_components"}
+            ),
             "post_detectors_run": sorted(detector_name(d) for d in self.post_detectors),
             "caveat": CAVEAT,
         }
@@ -232,7 +299,9 @@ class Pseudonymiser:
 
 #: Entity types promoted out of a kept container span: structured identifiers, whose match is
 #: unambiguous. Names are not (a first name inside a kept date: "1. Maj 2024").
-PROMOTABLE_TYPES = frozenset({"CPR", "CVR", "EMAIL", "PHONE", "IBAN", "BANK_ACCOUNT", "CASE_ID", "CREDENTIAL"})
+PROMOTABLE_TYPES = frozenset(
+    {"CPR", "CVR", "EMAIL", "PHONE", "IBAN", "BANK_ACCOUNT", "CASE_ID", "CREDENTIAL"}
+)
 
 
 def _promotable(span: Span) -> bool:
@@ -279,7 +348,11 @@ def _contains_value(text: str, entity_type: str, original: str) -> bool:
     if not norm:
         return False
     if entity_type in ("PERSON", "ORG", "ADDRESS"):
-        return re.search(rf"(?<![\w]){re.escape(original)}(?![\w])", text) is not None or re.search(
-            rf"(?<![\w]){re.escape(norm)}(?![\w])", normalise(entity_type, text)
-        ) is not None
+        return (
+            re.search(rf"(?<![\w]){re.escape(original)}(?![\w])", text) is not None
+            or re.search(
+                rf"(?<![\w]){re.escape(norm)}(?![\w])", normalise(entity_type, text)
+            )
+            is not None
+        )
     return norm in normalise(entity_type, text) or original in text

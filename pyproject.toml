@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nyms"
-version = "0.0.1"
+version = "0.0.2"
 description = "Reversible pseudonymisation of text: deterministic detection of personal and sensitive identifiers, keyed surrogate generation (readable pseudonyms included), and re-identification through a mapping store."
 readme = "README.md"
 requires-python = ">=3.10"

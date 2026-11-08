@@ -12,16 +12,51 @@ back into whatever the AI answers.
 """
 
 from nyms.core import CAVEAT, Pseudonymiser, Reidentified, Result
-from nyms.detect import Detector, DetectorLike, default_detectors, detect, gazetteer_detector, known_values_detectors
+from nyms.detect import (
+    Detector,
+    DetectorLike,
+    default_detectors,
+    detect,
+    gazetteer_detector,
+    known_values_detectors,
+)
 from nyms.mapping import MappingStore, local_mapping_store, normalise
 from nyms.policy import Policy
 from nyms.spans import Span, apply_replacements, resolve_overlaps
-from nyms.surrogates import Aliases, Counter, KeyedWords, RandomWords, readable, words_from_bytes
+from nyms.surrogates import (
+    Aliases,
+    Counter,
+    KeyedWords,
+    RandomWords,
+    readable,
+    words_from_bytes,
+)
 from nyms.taxonomy import ENTITY_TYPES, EntityType
 
 __all__ = [
-    "CAVEAT", "Pseudonymiser", "Reidentified", "Result", "Detector", "default_detectors", "detect",
-    "gazetteer_detector", "DetectorLike", "known_values_detectors", "MappingStore", "local_mapping_store", "normalise", "Policy", "Span",
-    "apply_replacements", "resolve_overlaps", "Aliases", "Counter", "KeyedWords", "RandomWords",
-    "readable", "words_from_bytes", "ENTITY_TYPES", "EntityType",
+    "CAVEAT",
+    "Pseudonymiser",
+    "Reidentified",
+    "Result",
+    "Detector",
+    "default_detectors",
+    "detect",
+    "gazetteer_detector",
+    "DetectorLike",
+    "known_values_detectors",
+    "MappingStore",
+    "local_mapping_store",
+    "normalise",
+    "Policy",
+    "Span",
+    "apply_replacements",
+    "resolve_overlaps",
+    "Aliases",
+    "Counter",
+    "KeyedWords",
+    "RandomWords",
+    "readable",
+    "words_from_bytes",
+    "ENTITY_TYPES",
+    "EntityType",
 ]

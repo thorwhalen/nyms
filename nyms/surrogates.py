@@ -73,11 +73,19 @@ def default_wordlist() -> tuple[str, ...]:
     >>> len(default_wordlist())
     1296
     """
-    text = resources.files("nyms.data.wordlists").joinpath("eff_short_wordlist_2_0.txt").read_text("utf-8")
-    return tuple(line.split("\t")[-1].strip() for line in text.splitlines() if line.strip())
+    text = (
+        resources.files("nyms.data.wordlists")
+        .joinpath("eff_short_wordlist_2_0.txt")
+        .read_text("utf-8")
+    )
+    return tuple(
+        line.split("\t")[-1].strip() for line in text.splitlines() if line.strip()
+    )
 
 
-def words_from_bytes(data: bytes, *, n: int = 2, wordlist: Sequence[str] | None = None) -> list[str]:
+def words_from_bytes(
+    data: bytes, *, n: int = 2, wordlist: Sequence[str] | None = None
+) -> list[str]:
     """Render *data* as *n* words from *wordlist* (default: the EFF short list).
 
     The integer value of the bytes is written in base ``len(wordlist)``; the lowest *n*
@@ -129,7 +137,9 @@ def keyed_digest(key: bytes, entity_type: str, value: str) -> bytes:
     """
     if len(key) < 16:
         raise ValueError("key must be at least 16 bytes")
-    return hmac.new(key, f"{entity_type}\x00{value}".encode("utf-8"), hashlib.sha256).digest()
+    return hmac.new(
+        key, f"{entity_type}\x00{value}".encode("utf-8"), hashlib.sha256
+    ).digest()
 
 
 # --------------------------------------------------------------------------- strategies
@@ -170,7 +180,9 @@ class KeyedWords:
     key: bytes
     n_words: int = 2
     wordlist: Sequence[str] | None = None
-    templates: Mapping[str, str] = field(default_factory=lambda: dict(DEFAULT_WORD_TEMPLATES))
+    templates: Mapping[str, str] = field(
+        default_factory=lambda: dict(DEFAULT_WORD_TEMPLATES)
+    )
     default_template: str = DEFAULT_WORD_TEMPLATE
 
     def __call__(self, entity_type: str, value: str, *, vault: Vault) -> str:
@@ -178,7 +190,11 @@ class KeyedWords:
         template = self.templates.get(entity_type, self.default_template)
         n = self.n_words
         while True:
-            s = _render(template, entity_type, words_from_bytes(digest, n=n, wordlist=self.wordlist))
+            s = _render(
+                template,
+                entity_type,
+                words_from_bytes(digest, n=n, wordlist=self.wordlist),
+            )
             if s not in vault:
                 return s
             n += 1  # a collision with another value: one more word disambiguates
@@ -190,13 +206,21 @@ class RandomWords:
 
     n_words: int = 2
     wordlist: Sequence[str] | None = None
-    templates: Mapping[str, str] = field(default_factory=lambda: dict(DEFAULT_WORD_TEMPLATES))
+    templates: Mapping[str, str] = field(
+        default_factory=lambda: dict(DEFAULT_WORD_TEMPLATES)
+    )
     default_template: str = DEFAULT_WORD_TEMPLATE
 
     def __call__(self, entity_type: str, value: str, *, vault: Vault) -> str:
         template = self.templates.get(entity_type, self.default_template)
         while True:
-            s = _render(template, entity_type, words_from_bytes(secrets.token_bytes(16), n=self.n_words, wordlist=self.wordlist))
+            s = _render(
+                template,
+                entity_type,
+                words_from_bytes(
+                    secrets.token_bytes(16), n=self.n_words, wordlist=self.wordlist
+                ),
+            )
             if s not in vault:
                 return s
 
@@ -216,13 +240,24 @@ class Aliases:
     fallback: Strategy = field(default_factory=Counter)
 
     def __post_init__(self):
-        self._lookup = {" ".join(k.casefold().split()): v for k, v in self.aliases.items()}
+        self._lookup = {
+            " ".join(k.casefold().split()): v for k, v in self.aliases.items()
+        }
 
     def __call__(self, entity_type: str, value: str, *, vault: Vault) -> str:
-        return self._lookup.get(" ".join(value.casefold().split())) or self.fallback(entity_type, value, vault=vault)
+        return self._lookup.get(" ".join(value.casefold().split())) or self.fallback(
+            entity_type, value, vault=vault
+        )
 
 
-def readable(value: str, *, key: bytes, entity_type: str = "VALUE", n_words: int = 2, wordlist: Sequence[str] | None = None) -> str:
+def readable(
+    value: str,
+    *,
+    key: bytes,
+    entity_type: str = "VALUE",
+    n_words: int = 2,
+    wordlist: Sequence[str] | None = None,
+) -> str:
     """The stand-alone tool: a keyed hash of *value*, as readable words.
 
     >>> readable('010190-1234', key=b'0' * 32) == readable('010190-1234', key=b'0' * 32)
@@ -230,4 +265,8 @@ def readable(value: str, *, key: bytes, entity_type: str = "VALUE", n_words: int
     >>> readable('010190-1234', key=b'0' * 32) != readable('010190-1234', key=b'1' * 32)
     True
     """
-    return "-".join(words_from_bytes(keyed_digest(key, entity_type, value), n=n_words, wordlist=wordlist))
+    return "-".join(
+        words_from_bytes(
+            keyed_digest(key, entity_type, value), n=n_words, wordlist=wordlist
+        )
+    )

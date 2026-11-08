@@ -15,7 +15,11 @@ from nyms.tools import _dispatch_funcs
 def main() -> int:
     # Positional parameters stay positional even with a default (the text); keyword-only
     # parameters become flags (--path, --project, ...).
-    return cw.dispatch(_dispatch_funcs, prog="nyms", convention=cw.Convention(naming=cw.BY_NAME_IF_KWONLY))
+    return cw.dispatch(
+        _dispatch_funcs,
+        prog="nyms",
+        convention=cw.Convention(naming=cw.BY_NAME_IF_KWONLY),
+    )
 
 
 if __name__ == "__main__":

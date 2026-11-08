@@ -102,7 +102,16 @@ class Record:
     @classmethod
     def from_dict(cls, d: dict) -> Record:
         return cls(
-            **{k: d.get(k, "") for k in ("surrogate", "original", "entity_type", "normalised", "strategy")},
+            **{
+                k: d.get(k, "")
+                for k in (
+                    "surrogate",
+                    "original",
+                    "entity_type",
+                    "normalised",
+                    "strategy",
+                )
+            },
             created=float(d.get("created", 0.0)),
             aliases=tuple(d.get("aliases", ())),
         )
@@ -111,7 +120,12 @@ class Record:
 class MappingStore:
     """Records keyed by surrogate, with an in-memory index by ``(entity_type, normalised)``."""
 
-    def __init__(self, store: MutableMapping[str, dict] | None = None, *, strategy: Strategy | None = None):
+    def __init__(
+        self,
+        store: MutableMapping[str, dict] | None = None,
+        *,
+        strategy: Strategy | None = None,
+    ):
         self._store: MutableMapping[str, dict] = {} if store is None else store
         self.strategy: Strategy = Counter() if strategy is None else strategy
         self._reload()
@@ -138,7 +152,9 @@ class MappingStore:
 
     # -- Vault protocol -------------------------------------------------------
     def __contains__(self, surrogate: object) -> bool:
-        return surrogate in self._store or (isinstance(surrogate, str) and canon(surrogate) in self._canons)
+        return surrogate in self._store or (
+            isinstance(surrogate, str) and canon(surrogate) in self._canons
+        )
 
     def count(self, entity_type: str) -> int:
         return self._counts.get(entity_type, 0)
@@ -186,19 +202,29 @@ class MappingStore:
                 if norm.endswith(suffix) and len(norm) > len(suffix) + 1:
                     base = self._by_value.get((entity_type, norm[: -len(suffix)]))
                     if base is not None:
-                        return base, text[-len(suffix):]
+                        return base, text[-len(suffix) :]
                 genitive = self._by_value.get((entity_type, norm + suffix))
                 if genitive is not None:
                     self._relink(genitive, entity_type, text.strip(), norm)
                     return genitive, ""
         return self.add(entity_type, text), ""
 
-    def _relink(self, surrogate: str, entity_type: str, original: str, norm: str) -> None:
+    def _relink(
+        self, surrogate: str, entity_type: str, original: str, norm: str
+    ) -> None:
         """A known genitive form turned out to have a base form: the base is the original."""
         rec = self.record(surrogate)
         if rec is None:
             return
-        new = Record(surrogate, original, entity_type, norm, rec.strategy, rec.created, tuple(sorted({*rec.aliases, rec.normalised})))
+        new = Record(
+            surrogate,
+            original,
+            entity_type,
+            norm,
+            rec.strategy,
+            rec.created,
+            tuple(sorted({*rec.aliases, rec.normalised})),
+        )
         self._store[surrogate] = new.to_dict()
         self._by_value[(entity_type, norm)] = surrogate
 
@@ -210,8 +236,17 @@ class MappingStore:
         if surrogate is None:
             surrogate = self.strategy(entity_type, text.strip(), vault=self)
         if surrogate in self._store or canon(surrogate) in self._canons:
-            raise ValueError(f"surrogate already in use (or indistinguishable from one): {surrogate!r}")
-        rec = Record(surrogate, text.strip(), entity_type, norm, type(self.strategy).__name__, time.time())
+            raise ValueError(
+                f"surrogate already in use (or indistinguishable from one): {surrogate!r}"
+            )
+        rec = Record(
+            surrogate,
+            text.strip(),
+            entity_type,
+            norm,
+            type(self.strategy).__name__,
+            time.time(),
+        )
         self._store[surrogate] = rec.to_dict()
         self._index(rec)
         self._n_loaded = len(self._store)
@@ -227,7 +262,15 @@ class MappingStore:
         norm = normalise(entity_type, text)
         if rec is None or (entity_type, norm) in self._by_value:
             return
-        new = Record(rec.surrogate, rec.original, rec.entity_type, rec.normalised, rec.strategy, rec.created, tuple(sorted({*rec.aliases, norm})))
+        new = Record(
+            rec.surrogate,
+            rec.original,
+            rec.entity_type,
+            rec.normalised,
+            rec.strategy,
+            rec.created,
+            tuple(sorted({*rec.aliases, norm})),
+        )
         self._store[surrogate] = new.to_dict()
         self._by_value[(entity_type, norm)] = surrogate
 
@@ -245,14 +288,18 @@ def project_dir(project: str, *, rootdir: str | Path | None = None) -> Path:
 
 
 def _safe_id(surrogate: str) -> str:
-    return base64.urlsafe_b64encode(surrogate.encode("utf-8")).decode("ascii").rstrip("=")
+    return (
+        base64.urlsafe_b64encode(surrogate.encode("utf-8")).decode("ascii").rstrip("=")
+    )
 
 
 def _surrogate_of_id(file_id: str) -> str:
     return base64.urlsafe_b64decode(file_id + "=" * (-len(file_id) % 4)).decode("utf-8")
 
 
-def local_mapping_store(project: str = "default", *, rootdir: str | Path | None = None, codec=None) -> MutableMapping[str, dict]:
+def local_mapping_store(
+    project: str = "default", *, rootdir: str | Path | None = None, codec=None
+) -> MutableMapping[str, dict]:
     """A ``dol`` file store of records under the project dir, optionally through *codec*.
 
     *codec* is a pair ``(encode: bytes -> bytes, decode: bytes -> bytes)`` applied to the JSON
@@ -276,7 +323,11 @@ def local_mapping_store(project: str = "default", *, rootdir: str | Path | None 
         if recorded != codec_name:
             raise StoreError(
                 f"project {project!r} was created with codec {recorded!r} but is being opened with {codec_name!r}; "
-                + ("pass encrypt=True / --encrypt" if recorded == "fernet" else "open it without encryption")
+                + (
+                    "pass encrypt=True / --encrypt"
+                    if recorded == "fernet"
+                    else "open it without encryption"
+                )
             )
     else:
         meta.write_text(json.dumps({"codec": codec_name, "nyms": 1}), "utf-8")
@@ -289,7 +340,9 @@ def local_mapping_store(project: str = "default", *, rootdir: str | Path | None 
         files,
         id_of_key=_safe_id,
         key_of_id=_surrogate_of_id,
-        data_of_obj=lambda obj: encode(json.dumps(obj, ensure_ascii=False).encode("utf-8")),
+        data_of_obj=lambda obj: encode(
+            json.dumps(obj, ensure_ascii=False).encode("utf-8")
+        ),
         obj_of_data=lambda data: json.loads(decode(data).decode("utf-8")),
     )
 
@@ -309,7 +362,9 @@ def encrypted(key: bytes):
     try:
         from cryptography.fernet import Fernet
     except ImportError as e:  # pragma: no cover
-        raise ImportError("encryption at rest needs the optional dependency: pip install 'nyms[crypto]'") from e
+        raise ImportError(
+            "encryption at rest needs the optional dependency: pip install 'nyms[crypto]'"
+        ) from e
     import hashlib
 
     fkey = base64.urlsafe_b64encode(hashlib.sha256(b"nyms-store\x00" + key).digest())

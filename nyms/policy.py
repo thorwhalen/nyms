@@ -132,4 +132,9 @@ class Policy:
         >>> 'acme aps' in p.deny
         True
         """
-        return Policy(**{**asdict(self), "deny": self.deny | {n.casefold().strip() for n in names}})
+        return Policy(
+            **{
+                **asdict(self),
+                "deny": self.deny | {n.casefold().strip() for n in names},
+            }
+        )

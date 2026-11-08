@@ -56,7 +56,11 @@ class DetectorLike(Protocol):
 
 def detector_name(detector) -> str:
     """The name a detector reports under: its ``name`` attribute, else its function name."""
-    return getattr(detector, "name", None) or getattr(detector, "__name__", None) or type(detector).__name__
+    return (
+        getattr(detector, "name", None)
+        or getattr(detector, "__name__", None)
+        or type(detector).__name__
+    )
 
 
 def detector_entity_type(detector) -> str | None:
@@ -96,15 +100,27 @@ class Detector:
             start, end = m.span(self.group)
             if start == end:
                 continue
-            if ctx is not None and ctx.search(text[max(0, start - CONTEXT_WINDOW) : start]):
+            if ctx is not None and ctx.search(
+                text[max(0, start - CONTEXT_WINDOW) : start]
+            ):
                 score = min(1.0, score + CONTEXT_BOOST)
             value = self.value_of(m) if self.value_of is not None else None
-            yield Span(start, end, self.entity_type, text[start:end], round(score, 3), self.name, value)
+            yield Span(
+                start,
+                end,
+                self.entity_type,
+                text[start:end],
+                round(score, 3),
+                self.name,
+                value,
+            )
 
 
 @lru_cache(maxsize=None)
 def _context_re(words: tuple[str, ...]) -> re.Pattern:
-    return re.compile(r"(?i)(?<![\w])(?:" + "|".join(re.escape(w) for w in words) + r")")
+    return re.compile(
+        r"(?i)(?<![\w])(?:" + "|".join(re.escape(w) for w in words) + r")"
+    )
 
 
 def normalise_text(text: str) -> str:
@@ -116,7 +132,9 @@ def normalise_text(text: str) -> str:
     return unicodedata.normalize("NFC", text).replace("\r\n", "\n")
 
 
-def detect_raw(text: str, detectors: Iterable[DetectorLike] | None = None) -> list[Span]:
+def detect_raw(
+    text: str, detectors: Iterable[DetectorLike] | None = None
+) -> list[Span]:
     """Run *detectors* (default: :func:`default_detectors`); every span, overlaps included."""
     detectors = default_detectors() if detectors is None else detectors
     found: list[Span] = []
@@ -223,7 +241,9 @@ def _iban_validate(m: re.Match):
 def _latin_letters(category: str) -> str:
     """Latin letters of one Unicode category (``Lu`` or ``Ll``) from the blocks up to Extended-B."""
     ranges = (range(0x41, 0x5B), range(0x61, 0x7B), range(0xC0, 0x250))
-    return "".join(chr(c) for r in ranges for c in r if unicodedata.category(chr(c)) == category)
+    return "".join(
+        chr(c) for r in ranges for c in r if unicodedata.category(chr(c)) == category
+    )
 
 
 _UC = re.escape(_latin_letters("Lu"))
@@ -231,7 +251,9 @@ _LC = re.escape(_latin_letters("Ll"))
 
 #: A capitalised word (``Jensen``, ``Anne-Marie``) or an all-capitals one (``JENSEN``), as in
 #: headings; a single capital letter is not a word (so ``N`` in ``København N`` is a suffix).
-_CAP_WORD = rf"(?:[{_UC}][{_LC}]+(?:-[{_UC}][{_LC}]+)?|[{_UC}]{{2,}}(?:-[{_UC}]{{2,}})?)"
+_CAP_WORD = (
+    rf"(?:[{_UC}][{_LC}]+(?:-[{_UC}][{_LC}]+)?|[{_UC}]{{2,}}(?:-[{_UC}]{{2,}})?)"
+)
 _INITIALS = rf"(?:[{_UC}]\.\s?){{1,3}}"
 _PARTICLE = r"(?:von|van|de|der|den|af|la|le|du|di|da)"
 # Each step of a name's tail is a capitalised word or an initial, optionally preceded by a
@@ -267,7 +289,10 @@ _EN_ADDRESS = re.compile(
 
 def _dk_address_validate(m: re.Match):
     street = m.group("street")
-    has_suffix = re.search(_DK_STREET_SUFFIX + r"$", street.split()[-1], re.IGNORECASE) is not None
+    has_suffix = (
+        re.search(_DK_STREET_SUFFIX + r"$", street.split()[-1], re.IGNORECASE)
+        is not None
+    )
     if m.group("post"):
         return 0.95
     return 0.8 if has_suffix else False
@@ -309,8 +334,14 @@ _CREDENTIAL_PATTERNS = [
     ("stripe_key", r"\b[srp]k_(?:live|test)_[A-Za-z0-9]{16,}\b"),
     ("slack_token", r"\bxox[baprs]-[A-Za-z0-9\-]{10,}\b"),
     ("google_api_key", r"\bAIza[0-9A-Za-z_\-]{35}\b"),
-    ("json_web_token", r"\beyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]+"),
-    ("private_key_block", r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----"),
+    (
+        "json_web_token",
+        r"\beyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]+",
+    ),
+    (
+        "private_key_block",
+        r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----",
+    ),
     (
         "secret_assignment",
         r"(?i)(?<![A-Za-z0-9])(?:[A-Za-z0-9]+[_-])*(?:api[_-]?key|secret[_-]?\w*|passwd|password|access[_-]?token|auth[_-]?token|token|credential\w*)\b\s*[:=]\s*['\"]?((?=[^'\"\s]*[A-Za-z])(?=[^'\"\s]*\d)[A-Za-z0-9+/=_\-.]{16,})['\"]?",
@@ -321,7 +352,9 @@ _TITLES = (
     r"(?:\b(?:Hr|Fru|Frk|Mr|Mrs|Ms|Mx|Dr|Prof|Adv|Sir)\.?|\b(?:advokat|Advokat|direktør|Direktør|sagsøger|Sagsøger|"
     r"sagsøgte|Sagsøgte|klager|Klager|indklagede|Indklagede|lejer|Lejer|udlejer|Udlejer|vidne|Vidne|dommer|Dommer))"
 )
-_TITLE_NAME = re.compile(rf"{_TITLES}\s+(?P<name>(?:{_INITIALS})?{_CAP_WORD}{_NAME_TAIL})")
+_TITLE_NAME = re.compile(
+    rf"{_TITLES}\s+(?P<name>(?:{_INITIALS})?{_CAP_WORD}{_NAME_TAIL})"
+)
 
 _HEURISTIC_NAME = re.compile(
     rf"(?<![{_UC}{_LC}\-])(?P<name>(?:{_INITIALS}|{_CAP_WORD})(?:\s(?:{_PARTICLE}\s)?{_CAP_WORD}){{1,3}})(?![{_UC}{_LC}])"
@@ -352,7 +385,10 @@ NAME_STOPWORDS = frozenset(
 
 def _heuristic_name_validate(m: re.Match):
     words = m.group("name").split()
-    if words[0].casefold().rstrip(".") in NAME_STOPWORDS or words[-1].casefold() in NAME_STOPWORDS:
+    if (
+        words[0].casefold().rstrip(".") in NAME_STOPWORDS
+        or words[-1].casefold() in NAME_STOPWORDS
+    ):
         return False
     if all(w.casefold() in NAME_STOPWORDS for w in words):
         return False
@@ -371,7 +407,11 @@ def bundled_first_names(*languages: str) -> frozenset[str]:
     languages = languages or ("da", "en")
     names: set[str] = set()
     for lang in languages:
-        text = resources.files("nyms.data.names").joinpath(f"first_names_{lang}.txt").read_text("utf-8")
+        text = (
+            resources.files("nyms.data.names")
+            .joinpath(f"first_names_{lang}.txt")
+            .read_text("utf-8")
+        )
         names.update(w.casefold() for w in text.split())
     return frozenset(names)
 
@@ -405,7 +445,9 @@ def gazetteer_detector(
     # The list is matched case-insensitively (headings are upper case) but the head must start
     # with a capital: "jan" in "1. jan. 2024" is a month, "Jan" is a name. A genitive "s" after
     # the name is matched but left outside the span.
-    pattern = re.compile(rf"(?<![{_UC}{_LC}])(?P<name>(?i:{alt})(?:-{_CAP_WORD})?{tail})(?:(?:'s|’s|s)(?![{_UC}{_LC}])|(?![{_UC}{_LC}]))")
+    pattern = re.compile(
+        rf"(?<![{_UC}{_LC}])(?P<name>(?i:{alt})(?:-{_CAP_WORD})?{tail})(?:(?:'s|’s|s)(?![{_UC}{_LC}])|(?![{_UC}{_LC}]))"
+    )
 
     def validate(m: re.Match):
         name = m.group("name")
@@ -414,46 +456,144 @@ def gazetteer_detector(
         return score if " " in name else min(score, single_word_score)
 
     value_of = (lambda m: value_of_name(m.group("name"))) if value_of_name else None
-    return Detector(name, entity_type, pattern, score, validate, "name", value_of=value_of)
+    return Detector(
+        name, entity_type, pattern, score, validate, "name", value_of=value_of
+    )
 
 
-def default_detectors(*, names: Iterable[str] = (), languages: tuple[str, ...] = ("da", "en")) -> list[Detector]:
+def default_detectors(
+    *, names: Iterable[str] = (), languages: tuple[str, ...] = ("da", "en")
+) -> list[Detector]:
     """The deterministic detector set. *names* are the parties you already know.
 
     Order does not matter for the result (overlaps are resolved afterwards), only for the
     report's grouping.
     """
     detectors = [
-        Detector("cpr", "CPR", re.compile(r"(?<![\d])\d{6}-?\d{4}(?![\d])"), 0.9, _cpr_validate,
-                 context=("cpr", "cpr-nr", "cpr-nummer", "personnummer", "person nr", "fødselsnummer")),
-        Detector("cvr", "CVR", re.compile(r"(?<![\w])\d{8}(?![\d])"), 0.4, _cvr_validate,
-                 context=("cvr", "cvr-nr", "cvr-nummer", "se-nr", "se-nummer", "vat", "moms")),
+        Detector(
+            "cpr",
+            "CPR",
+            re.compile(r"(?<![\d])\d{6}-?\d{4}(?![\d])"),
+            0.9,
+            _cpr_validate,
+            context=(
+                "cpr",
+                "cpr-nr",
+                "cpr-nummer",
+                "personnummer",
+                "person nr",
+                "fødselsnummer",
+            ),
+        ),
+        Detector(
+            "cvr",
+            "CVR",
+            re.compile(r"(?<![\w])\d{8}(?![\d])"),
+            0.4,
+            _cvr_validate,
+            context=(
+                "cvr",
+                "cvr-nr",
+                "cvr-nummer",
+                "se-nr",
+                "se-nummer",
+                "vat",
+                "moms",
+            ),
+        ),
         Detector("dk_vat", "CVR", re.compile(r"\bDK\s?\d{8}\b"), 0.95),
         Detector("email", "EMAIL", re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"), 1.0),
-        Detector("dk_phone", "PHONE", re.compile(r"(?<![\d+])(?:\+45[\s.-]?|0045[\s.-]?)?(?:\d{2}[\s.-]?){3}\d{2}(?![\d])"), 0.7,
-                 _dk_phone_validate, context=("tlf", "telefon", "mobil", "mob", "phone", "tel", "ring")),
-        Detector("intl_phone", "PHONE", re.compile(r"(?<![\d])\+(?!45)\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,4}(?![\d])"), 0.9),
-        Detector("iban", "IBAN", re.compile(r"\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,4})?\b"), 1.0, _iban_validate),
-        Detector("dk_bank_account", "BANK_ACCOUNT", re.compile(r"(?<![\d])\d{4}(?:[\s-]|\s?(?i:konto(?:nr|nummer)?\.?)\s?)\d{6,10}(?![\d])"), 0.6,
-                 context=("konto", "kontonr", "kontonummer", "reg", "reg.nr", "registreringsnummer", "account", "bank")),
+        Detector(
+            "dk_phone",
+            "PHONE",
+            re.compile(
+                r"(?<![\d+])(?:\+45[\s.-]?|0045[\s.-]?)?(?:\d{2}[\s.-]?){3}\d{2}(?![\d])"
+            ),
+            0.7,
+            _dk_phone_validate,
+            context=("tlf", "telefon", "mobil", "mob", "phone", "tel", "ring"),
+        ),
+        Detector(
+            "intl_phone",
+            "PHONE",
+            re.compile(
+                r"(?<![\d])\+(?!45)\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,4}(?![\d])"
+            ),
+            0.9,
+        ),
+        Detector(
+            "iban",
+            "IBAN",
+            re.compile(
+                r"\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,4})?\b"
+            ),
+            1.0,
+            _iban_validate,
+        ),
+        Detector(
+            "dk_bank_account",
+            "BANK_ACCOUNT",
+            re.compile(
+                r"(?<![\d])\d{4}(?:[\s-]|\s?(?i:konto(?:nr|nummer)?\.?)\s?)\d{6,10}(?![\d])"
+            ),
+            0.6,
+            context=(
+                "konto",
+                "kontonr",
+                "kontonummer",
+                "reg",
+                "reg.nr",
+                "registreringsnummer",
+                "account",
+                "bank",
+            ),
+        ),
         Detector("dk_address", "ADDRESS", _DK_ADDRESS, 0.9, _dk_address_validate),
         Detector("en_address", "ADDRESS", _EN_ADDRESS, 0.9),
-        Detector("dk_postcode_city", "POSTCODE_CITY", re.compile(rf"(?<![\d]){_DK_POSTCODE_CITY}(?![{_LC}])"), 0.6),
+        Detector(
+            "dk_postcode_city",
+            "POSTCODE_CITY",
+            re.compile(rf"(?<![\d]){_DK_POSTCODE_CITY}(?![{_LC}])"),
+            0.6,
+        ),
         Detector("amount", "AMOUNT", _AMOUNT, 0.95),
         Detector("date", "DATE", _DATE, 0.9),
         Detector("case_id", "CASE_ID", _CASE_ID_CODE, 0.9),
         Detector("case_id_labelled", "CASE_ID", _CASE_ID_LABELLED, 0.9, None, "id"),
-        Detector("url", "URL", re.compile(r"\bhttps?://[^\s<>\"')\]]+|\bwww\.[^\s<>\"')\]]+"), 1.0),
+        Detector(
+            "url",
+            "URL",
+            re.compile(r"\bhttps?://[^\s<>\"')\]]+|\bwww\.[^\s<>\"')\]]+"),
+            1.0,
+        ),
         Detector("org_name", "ORG", _ORG_NAME, 0.9, None, "name"),
         Detector("title_name", "PERSON", _TITLE_NAME, 0.9, None, "name"),
-        Detector("heuristic_name", "PERSON", _HEURISTIC_NAME, 0.5, _heuristic_name_validate, "name"),
+        Detector(
+            "heuristic_name",
+            "PERSON",
+            _HEURISTIC_NAME,
+            0.5,
+            _heuristic_name_validate,
+            "name",
+        ),
     ]
     detectors.extend(
-        Detector(f"credential:{n}", "CREDENTIAL", re.compile(p), 1.0, None, 1 if n == "secret_assignment" else 0)
+        Detector(
+            f"credential:{n}",
+            "CREDENTIAL",
+            re.compile(p),
+            1.0,
+            None,
+            1 if n == "secret_assignment" else 0,
+        )
         for n, p in _CREDENTIAL_PATTERNS
     )
     if languages:
-        detectors.append(gazetteer_detector(bundled_first_names(*languages), name="first_names", score=0.9))
+        detectors.append(
+            gazetteer_detector(
+                bundled_first_names(*languages), name="first_names", score=0.9
+            )
+        )
     names = [n for n in names if n and n.strip()]
     if names:
         detectors.append(gazetteer_detector(names, name="known_names", score=1.0))
@@ -482,7 +622,9 @@ def name_components(full_names: Iterable[str]) -> dict[str, str]:
     return {k: next(iter(v)) for k, v in owners.items() if len(v) == 1}
 
 
-def known_values_detectors(records: Iterable, *, extra_names: Iterable[str] = (), score: float = 1.0) -> list[Detector]:
+def known_values_detectors(
+    records: Iterable, *, extra_names: Iterable[str] = (), score: float = 1.0
+) -> list[Detector]:
     """Detectors for what a project already knows: its values, their name components, its surrogates.
 
     - every original in the mapping, by type: names through :func:`gazetteer_detector` (word
@@ -500,21 +642,51 @@ def known_values_detectors(records: Iterable, *, extra_names: Iterable[str] = ()
     out: list[Detector] = []
     for entity_type, values in sorted(by_type.items()):
         if entity_type in ("PERSON", "ORG"):
-            out.append(gazetteer_detector(values, name="known_values", entity_type=entity_type, score=score, surname_tail=False))
+            out.append(
+                gazetteer_detector(
+                    values,
+                    name="known_values",
+                    entity_type=entity_type,
+                    score=score,
+                    surname_tail=False,
+                )
+            )
         else:
             alt = "|".join(re.escape(v) for v in sorted(values, key=len, reverse=True))
-            out.append(Detector("known_values", entity_type, re.compile(rf"(?<![\w])(?:{alt})(?![\w])"), score))
+            out.append(
+                Detector(
+                    "known_values",
+                    entity_type,
+                    re.compile(rf"(?<![\w])(?:{alt})(?![\w])"),
+                    score,
+                )
+            )
     persons = by_type.get("PERSON", set()) | {n for n in extra_names if n and n.strip()}
     components = name_components(persons)
     if components:
         out.append(
             gazetteer_detector(
-                components, name="known_components", entity_type="PERSON", score=0.95, surname_tail=False, single_word_score=0.95,
-                value_of_name=lambda text: components.get(re.sub(r"(?:'s|’s|s)$", "", text.casefold()), components.get(text.casefold())),
+                components,
+                name="known_components",
+                entity_type="PERSON",
+                score=0.95,
+                surname_tail=False,
+                single_word_score=0.95,
+                value_of_name=lambda text: components.get(
+                    re.sub(r"(?:'s|’s|s)$", "", text.casefold()),
+                    components.get(text.casefold()),
+                ),
             )
         )
     surrogates = sorted({r.surrogate for r in recs}, key=len, reverse=True)
     if surrogates:
         alt = "|".join(re.escape(s) for s in surrogates)
-        out.append(Detector("surrogates", SURROGATE_TYPE, re.compile(rf"(?<![\w])(?:{alt})(?![\w])"), 1.0))
+        out.append(
+            Detector(
+                "surrogates",
+                SURROGATE_TYPE,
+                re.compile(rf"(?<![\w])(?:{alt})(?![\w])"),
+                1.0,
+            )
+        )
     return out
