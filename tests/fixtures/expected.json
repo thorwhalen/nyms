@@ -1,0 +1,24 @@
+{
+  "da_lejesag.md": {
+    "must_replace": [
+      "Rasmus Østergaard Jensen", "210362-5629", "28 76 54 32", "rasmus.oej@example.dk",
+      "10150817", "Mette Kirstine Holm", "36.000 kr.", "1234 kontonr. 5678901234",
+      "DKK 12.500", "Freja Lindqvist", "DK50 0040 0440 1162 43", "150.000 kr.",
+      "Nørrebrogade 112, 3. th., 2200 København N", "Vesterbrogade 45, 1620 København V",
+      "BS-4521/2026-KBH", "Mette Holm"
+    ],
+    "must_detect_kept": ["15. marts 2024", "20.03.2024", "1. juni 2024", "2. september 2025", "https://example.dk/sager/4521"]
+  },
+  "en_letter.md": {
+    "must_replace": [
+      "Eleanor Whitfield", "14 Rosemary Lane, Oxford, OX2 6QR", "£4,250.00",
+      "GB29 NWBK 6016 1331 9268 19", "eleanor.whitfield@example.org", "+44 7700 900123",
+      "James Harrison", "$5,000", "Samuel Okafor", "2026-CL-00917"
+    ],
+    "must_detect_kept": ["3 February 2026", "2026-03-05", "March 12, 2026", "1st April 2026"]
+  },
+  "secrets.txt": {
+    "must_replace": ["sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123456789", "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij12", "AKIAIOSFODNN7EXAMPLE"],
+    "must_detect_kept": []
+  }
+}
