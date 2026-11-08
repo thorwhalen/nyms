@@ -11,19 +11,29 @@ description = "Reversible pseudonymisation of text: deterministic detection of p
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-keywords = []
+keywords = ["pseudonymisation", "de-identification", "pii", "privacy", "gdpr", "redaction", "anonymization", "danish", "cpr"]
 authors = [
     { name = "Thor Whalen" },
 ]
-dependencies = []
+dependencies = [
+    "dol>=0.3",
+    "cw>=0.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/thorwhalen/nyms"
 Repository = "https://github.com/thorwhalen/nyms"
 Documentation = "https://thorwhalen.github.io/nyms"
 
+[project.scripts]
+nyms = "nyms.__main__:main"
+
 [project.optional-dependencies]
+crypto = [
+    "cryptography>=42",
+]
 dev = [
+    "cryptography>=42",
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "ruff>=0.1.0",
@@ -86,7 +96,9 @@ convention = "google"
 minversion = "6.0"
 testpaths = [
     "tests",
+    "nyms",
 ]
+addopts = "--doctest-modules"
 doctest_optionflags = [
     "NORMALIZE_WHITESPACE",
     "ELLIPSIS",
