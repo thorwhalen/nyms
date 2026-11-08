@@ -31,6 +31,9 @@ class Span:
     text: str
     score: float = 1.0
     detector: str = ""
+    #: The value this span stands for when it differs from the text: a surname mention
+    #: ("Jensen") that stands for a known full name ("Rasmus Jensen").
+    value: str | None = None
 
     @property
     def length(self) -> int:
@@ -39,8 +42,14 @@ class Span:
     def overlaps(self, other: Span) -> bool:
         return self.start < other.end and other.start < self.end
 
+    def contains(self, other: Span) -> bool:
+        return self.start <= other.start and other.end <= self.end
+
     def to_dict(self) -> dict:
-        return asdict(self)
+        d = asdict(self)
+        if d["value"] is None:
+            d.pop("value")
+        return d
 
 
 #: Below this score a span is "weak": it never outranks an overlapping strong span, however long.

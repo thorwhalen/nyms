@@ -118,11 +118,17 @@ def test_keyed_words_deterministic_per_key_and_type():
     assert readable("x", key=k1) == readable("x", key=k1) and "-" in readable("x", key=k1)
 
 
-def test_word_surrogates_round_trip_through_tolerant_matcher():
+def test_word_surrogates_round_trip_exact_case_only():
     p = Pseudonymiser(store={}, strategy=KeyedWords(b"k" * 32))
     r = p.pseudonymise("Rasmus Jensen (CPR 010190-1234) ringede.")
-    back = p.reidentify(r.text.lower())
+    back = p.reidentify(r.text)
     assert "Rasmus Jensen" in back.text and "010190-1234" in back.text
+    # A name-shaped surrogate is matched exactly (case included) so ordinary prose is left alone;
+    # a bracketed one stays tolerant.
+    lowered = p.reidentify(r.text.lower())
+    assert "Rasmus Jensen" not in lowered.text and "010190-1234" in lowered.text
+    person_surrogate = next(sur for span, sur in r.replacements if span.entity_type == "PERSON")
+    assert p.reidentify(f"the {person_surrogate.lower()} is a creek").text == f"the {person_surrogate.lower()} is a creek"
 
 
 def test_random_words_unique():
@@ -182,14 +188,168 @@ def test_cli_smoke(tmp_path, monkeypatch, capsys):
     src = tmp_path / "in.txt"
     src.write_text("Hans Jensen, tlf. 12 34 56 78", "utf-8")
     out = io.StringIO()
-    assert cw.dispatch(_dispatch_funcs, ["pseudonymise", str(src), "--project", "t1", "--out", str(tmp_path / "o.txt")], out=out) == 0
+    assert cw.dispatch(_dispatch_funcs, convention=cw.Convention(naming=cw.BY_NAME_IF_KWONLY), argv=["pseudonymise", "--path", str(src), "--project", "t1", "--out", str(tmp_path / "o.txt")], out=out) == 0
     assert (tmp_path / "o.txt").read_text("utf-8") == "[PERSON_1], tlf. [PHONE_1]"
     out = io.StringIO()
-    assert cw.dispatch(_dispatch_funcs, ["reidentify", str(tmp_path / "o.txt"), "--project", "t1"], out=out) == 0
+    assert cw.dispatch(_dispatch_funcs, convention=cw.Convention(naming=cw.BY_NAME_IF_KWONLY), argv=["reidentify", "--path", str(tmp_path / "o.txt"), "--project", "t1"], out=out) == 0
     assert "Hans Jensen" in out.getvalue()
     out = io.StringIO()
-    assert cw.dispatch(_dispatch_funcs, ["check", "Hans Jensen igen", "--project", "t1"], out=out) == 0
+    assert cw.dispatch(_dispatch_funcs, convention=cw.Convention(naming=cw.BY_NAME_IF_KWONLY), argv=["check", "Hans Jensen igen", "--project", "t1"], out=out) == 0
     assert "Hans Jensen" in out.getvalue()
     out = io.StringIO()
-    assert cw.dispatch(_dispatch_funcs, ["readable", "010190-1234", "--project", "t1"], out=out) == 0
+    assert cw.dispatch(_dispatch_funcs, convention=cw.Convention(naming=cw.BY_NAME_IF_KWONLY), argv=["readable", "010190-1234", "--project", "t1"], out=out) == 0
     assert re.fullmatch(r"[a-z]+-[a-z]+\n", out.getvalue())
+
+
+# --------------------------------------------------------------------------- review regressions
+
+
+def test_identifier_inside_a_kept_url_is_still_replaced():
+    p = Pseudonymiser(store={})
+    r = p.pseudonymise("Link: https://x.dk/cpr/010190-1234 og https://x.dk/?mail=rasmus.jensen@example.dk")
+    assert "010190-1234" not in r.text and "rasmus.jensen@example.dk" not in r.text
+    assert any(k.entity_type == "URL" for k in r.kept)
+
+
+def test_all_caps_names_are_whole():
+    p = Pseudonymiser(store={})
+    r = p.pseudonymise("SAGSØGTE: METTE HOLM. Senere skrev Mette Holm igen.")
+    assert r.text == "SAGSØGTE: [PERSON_1]. Senere skrev [PERSON_1] igen."
+
+
+def test_surname_ending_in_s_is_not_mutilated():
+    p = Pseudonymiser(store={})
+    r = p.pseudonymise("Niels Thomas kom.")
+    assert r.text == "[PERSON_1] kom." and p.mapping.original("[PERSON_1]") == "Niels Thomas"
+
+
+def test_genitive_seen_first_relinks_to_base_form():
+    p = Pseudonymiser(store={})
+    a = p.pseudonymise("Rasmus Jensens bil.")
+    b = p.pseudonymise("Rasmus Jensen kom.")
+    assert a.text == "[PERSON_1] bil." and b.text == "[PERSON_1] kom."
+    assert p.mapping.original("[PERSON_1]") == "Rasmus Jensen"
+
+
+def test_unicode_nfd_and_non_danish_letters():
+    import unicodedata
+
+    p = Pseudonymiser(store={})
+    nfd = unicodedata.normalize("NFD", "Søren Østergård Jensen bor på Nørrebrogade 12, 2200 København N.")
+    r = p.pseudonymise(nfd)
+    assert r.text == "[PERSON_1] bor på [ADDRESS_1]."
+    r2 = Pseudonymiser(store={}).pseudonymise("Her mødtes Łukasz Nowak og Ayşe Çelik og José Núñez.")
+    assert r2.text == "Her mødtes [PERSON_1] og [PERSON_2] og [PERSON_3]."
+
+
+def test_scaled_amounts():
+    p = Pseudonymiser(store={})
+    r = p.pseudonymise("Kravet er 1,2 mio. kr. og 2 mio. kr. i alt, samt kr. 1.200,50.")
+    assert r.text == "Kravet er [AMOUNT_1] og [AMOUNT_2] i alt, samt [AMOUNT_3]."
+
+
+def test_report_attributes_spans_to_the_detector_that_found_them():
+    p = Pseudonymiser(store={})
+    r = p.pseudonymise("Rasmus Jensen, CPR 010190-1234, 12 34 56 78, Vesterbro Ejendomme ApS")
+    by = r.report["replaced_by_detector"]
+    assert "known_values" not in by and by["cpr"] == 1 and by["dk_phone"] == 1 and by["org_name"] == 1
+    assert "known_values" in r.report["detectors_run"]
+
+
+def test_name_components_resolve_to_the_known_person():
+    p = Pseudonymiser(store={}, names=["Rasmus Jensen"])
+    r = p.pseudonymise("Rasmus Jensen kom. Rasmus gik. Jensen blev. Jensens bil.")
+    assert r.text == "[PERSON_1] kom. [PERSON_1] gik. [PERSON_1] blev. [PERSON_1]s bil."
+    r2 = Pseudonymiser(store={}).pseudonymise("Anne-Marie Nielsen og H.C. Andersen mødtes.")
+    assert r2.text == "[PERSON_1] og [PERSON_2] mødtes."
+
+
+def test_surrogate_canon_collision_is_rejected_and_output_is_idempotent():
+    strategy = Aliases({"Mette Holm": "Person 1"}, fallback=Counter())
+    p = Pseudonymiser(store={}, strategy=strategy, names=["Mette Holm", "Hans Jensen"])
+    p.pseudonymise("Hans Jensen kom.")
+    with pytest.raises(ValueError):
+        p.pseudonymise("Mette Holm kom.")
+    q = Pseudonymiser(store={}, strategy=KeyedWords(b"k" * 32))
+    once = q.pseudonymise("Hans Jensen mødte Mette Holm.")
+    twice = q.pseudonymise(once.text)
+    assert twice.text == once.text and len(q.mapping) == 2
+
+
+def test_two_instances_on_one_store_stay_consistent(tmp_path):
+    store = lambda: local_mapping_store("q", rootdir=tmp_path)  # noqa: E731
+    a = Pseudonymiser("q", store=store(), key=b"k" * 32)
+    b = Pseudonymiser("q", store=store(), key=b"k" * 32)
+    a.pseudonymise("Hans Jensen")
+    assert b.pseudonymise("Hans Jensen og Mette Holm").text == "[PERSON_1] og [PERSON_2]"
+
+
+def test_codec_mismatch_is_a_clear_error(tmp_path):
+    pytest.importorskip("cryptography")
+    from nyms.mapping import StoreError
+
+    local_mapping_store("enc", rootdir=tmp_path, codec=encrypted(b"k" * 32))
+    with pytest.raises(StoreError):
+        local_mapping_store("enc", rootdir=tmp_path)
+
+
+def test_bare_eight_digit_number_needs_context_to_be_a_cvr():
+    p = Pseudonymiser(store={})
+    assert p.pseudonymise("Faktura nr. 10150817 betalt.").text == "Faktura nr. 10150817 betalt."
+    assert p.pseudonymise("CVR 10150817 betalt.").text == "CVR [CVR_1] betalt."
+
+
+def test_labelled_case_id_keeps_label_and_month_abbreviation_is_not_a_name():
+    p = Pseudonymiser(store={})
+    assert p.pseudonymise("sagsnr. ABC-1234. Den 1. jan. 2024.").text == "sagsnr. [CASE_ID_1]. Den 1. jan. 2024."
+
+
+def test_reidentify_keeps_whitespace_and_handles_unbracketed_tokens():
+    p = Pseudonymiser(store={})
+    p.mapping.add("PERSON", "Hans Jensen")
+    assert p.reidentify("Hej, PERSON_1 og (PERSON_1)").text == "Hej, Hans Jensen og (Hans Jensen)"
+
+
+def test_project_names_are_file_system_safe():
+    from nyms.keys import _check_project_name
+
+    for bad in (".hidden", "a:b", "a/b", "", "a b"):
+        with pytest.raises(ValueError):
+            _check_project_name(bad)
+
+
+def test_allow_list_does_not_exempt_credentials():
+    pol = Policy.default()
+    pol.allow = frozenset({"sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123456789"})
+    r = Pseudonymiser(store={}, policy=pol).pseudonymise("key sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123456789")
+    assert "sk-ant" not in r.text
+
+
+def test_post_detectors_seam_runs_on_pseudonymised_text():
+    from nyms import Span
+
+    def fake_model_pass(text):
+        # a "model" that spots an unlisted name the deterministic pass missed, and (wrongly)
+        # also flags an existing surrogate, which must be protected
+        for word in ("Zorblax", "[PERSON_1]"):
+            i = text.find(word)
+            if i >= 0:
+                yield Span(i, i + len(word), "PERSON", word, 0.9, "fake_model")
+
+    p = Pseudonymiser(store={}, post_detectors=[fake_model_pass])
+    r = p.pseudonymise("Hans Jensen mødte Zorblax.")
+    assert r.text == "[PERSON_1] mødte [PERSON_2]."
+    assert r.report["replaced_by_detector"] == {"first_names": 1, "fake_model": 1}
+    assert p.reidentify(r.text).text == "Hans Jensen mødte Zorblax."
+
+
+def test_tools_do_not_guess_paths(tmp_path):
+    from nyms import tools
+
+    f = tmp_path / "secret.txt"
+    f.write_text("Hans Jensen", "utf-8")
+    spans = tools.detect(str(f))
+    assert all(s["text"] != "Hans Jensen" for s in spans)
+    assert tools.detect(path=str(f))[0]["text"] == "Hans Jensen"
+    with pytest.raises(ValueError):
+        tools.detect("x", path=str(f))

@@ -17,13 +17,14 @@ The package replaces personal and sensitive identifiers in text before the text 
 
 | # | Seam | v1 default (no new dependency) | Replacement it allows |
 |---|---|---|---|
-| 1 | `detectors` | regex, checksum and gazetteer detectors (`nyms.detect.default_detectors`) | a model-based second pass (spaCy/DaCy, GLiNER, an LLM through `aix` or `creel`), a Presidio adapter |
+| 1 | `detectors` | regex, checksum and gazetteer detectors (`nyms.detect.default_detectors`); any callable `text -> spans` | a Presidio adapter, more gazetteers |
+| 1b | `post_detectors` | none: stage 2 is off | the model-based second pass (spaCy/DaCy, GLiNER, an LLM through `aix` or `creel`), run on the already-pseudonymised text with the surrogates protected |
 | 2 | `policy` | `Policy.default()` (tiers 0 and 1, plus CVR, ORG, AMOUNT) | `strict()`, `identifiers()`, a serialised policy file |
 | 3 | `strategy` | `Counter` (`[PERSON_1]`) | `KeyedWords`, `RandomWords`, `Aliases`, format-preserving encryption |
 | 4 | `store` | `dol.JsonFiles` under `~/.local/share/nyms/<project>/mapping` | any `MutableMapping`; `encrypt=True` for Fernet at rest; SQLite, S3 through `dol` |
 | 5 | `key` | `resolve_key`: env var, then a 0600 key file, then a passphrase | `keyring`, `config2py`, `age`, a KMS |
 
-Surface for v1: Python facade, shipped agent skill, CLI (`cw`). MCP and HTTP: the tools module is the SSOT they would wrap; not built. NOT seams: the span data model, the report shape, the tolerant re-identification matcher, the overlap rule's signature.
+Surface for v1: Python facade, shipped agent skill, CLI (`cw`). The review of 2026-11-08 found the model pass could not be added as a plain detector (it runs on different text), so the stage became its own seam, `post_detectors`, with no implementation: the user asked for the choice, and the default choice is no second pass. MCP and HTTP: the tools module is the SSOT they would wrap; not built. NOT seams: the span data model, the report shape, the tolerant re-identification matcher, the overlap rule's signature.
 
 ## Consequences
 

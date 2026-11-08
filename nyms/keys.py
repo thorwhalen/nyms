@@ -30,6 +30,7 @@ import base64
 import binascii
 import hashlib
 import os
+import re
 import secrets
 from pathlib import Path
 
@@ -56,8 +57,19 @@ def key_path(project: str, *, key_dir: str | os.PathLike | None = None) -> Path:
     return Path(key_dir) / f"{project}.key" if key_dir else config_dir() / "keys" / f"{project}.key"
 
 
+_PROJECT_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
+
+
 def _check_project_name(project: str) -> None:
-    if not project or any(c in project for c in "/\\\0") or project in (".", ".."):
+    """Project names are file-system safe: letters, digits, ``.``, ``_``, ``-``; no leading dot.
+
+    >>> _check_project_name('case-2026')
+    >>> _check_project_name('.hidden')  # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    ValueError: not a valid project name: '.hidden'
+    """
+    if not _PROJECT_RE.fullmatch(project or ""):
         raise ValueError(f"not a valid project name: {project!r}")
 
 

@@ -33,7 +33,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field, asdict
 
 from nyms.spans import Span
-from nyms.taxonomy import ENTITY_TYPES, tier_of
+from nyms.taxonomy import ENTITY_TYPES, SURROGATE_TYPE, tier_of
 
 DEFAULT_MIN_SCORE = 0.5
 _ALWAYS_TIERS = (0, 1)
@@ -84,7 +84,11 @@ class Policy:
 
     def accepts(self, span: Span) -> bool:
         """Whether *span* gets replaced under this policy (post-detection decision)."""
+        if span.entity_type == SURROGATE_TYPE:
+            return False
         key = span.text.casefold().strip()
+        if tier_of(span.entity_type) == 0 and span.entity_type not in self.exclude:
+            return True  # credentials: replaced always, allow list notwithstanding
         if key in self.allow:
             return False
         if key in self.deny:

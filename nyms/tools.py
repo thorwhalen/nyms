@@ -4,12 +4,13 @@ The CLI (``nyms.__main__``, via ``cw``) dispatches this module's ``_dispatch_fun
 server (``py2mcp.mk_mcp_from_refs(['nyms.tools:pseudonymise', ...])``) or an HTTP adapter would
 reference the same names. Nothing here prints or exits; nothing imports a surface.
 
-A *source* argument is a path to a file (read as UTF-8), ``-`` for stdin, or the text itself.
+Every verb takes the content as positional ``text`` or, exclusively, a ``path`` (a UTF-8 file,
+or ``-`` for stdin). The two are never guessed from each other: a value that happens to be an
+existing path is still text. The project key is touched only when a verb needs it.
 """
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
@@ -21,12 +22,15 @@ POLICIES = {"default": Policy.default, "identifiers": Policy.identifiers, "stric
 STRATEGIES = ("counter", "keyed-words", "random-words")
 
 
-def _read_source(source: str) -> str:
-    if source == "-":
+def _read(text: str, path: str) -> str:
+    """Exactly one of *text* (the content itself) or *path* (a file, or ``-`` for stdin)."""
+    if bool(text) == bool(path):
+        raise ValueError("give either text or --path (a file, or - for stdin), not both")
+    if path == "-":
         return sys.stdin.read()
-    if len(source) < 4096 and os.path.exists(source):
-        return Path(source).read_text("utf-8")
-    return source
+    if path:
+        return Path(path).read_text("utf-8")
+    return text
 
 
 def _split(csv: str) -> list[str]:
@@ -41,17 +45,17 @@ def _pseudonymiser(project: str, *, policy: str = "default", names: str = "", st
     if name_list:
         pol = pol.with_names(*name_list)
     p = Pseudonymiser(project, policy=pol, names=name_list, encrypt=encrypt, strategy=Counter())
-    strat = _strategy(strategy, p.key)
+    strat = _strategy(strategy, p)  # resolves the key only for keyed-words
     alias_pairs = dict(x.split("=", 1) for x in _split(aliases) if "=" in x)
     p.mapping.strategy = Aliases(alias_pairs, fallback=strat) if alias_pairs else strat
     return p
 
 
-def _strategy(name: str, key: bytes):
+def _strategy(name: str, p: Pseudonymiser):
     if name == "counter":
         return Counter()
     if name == "keyed-words":
-        return KeyedWords(key)
+        return KeyedWords(p.key)
     if name == "random-words":
         return RandomWords()
     raise ValueError(f"unknown strategy {name!r}; one of {STRATEGIES}")
@@ -64,36 +68,36 @@ def _emit(text: str, out: str | None) -> dict:
     return {"text": text}
 
 
-def pseudonymise(source: str, *, project: str = "default", out: str | None = None, policy: str = "default", names: str = "", strategy: str = "counter", aliases: str = "", encrypt: bool = False) -> dict:
-    """Replace detected identifiers in *source* with surrogates; the project's mapping remembers them.
+def pseudonymise(text: str = "", *, path: str = "", project: str = "default", out: str | None = None, policy: str = "default", names: str = "", strategy: str = "counter", aliases: str = "", encrypt: bool = False) -> dict:
+    """Replace detected identifiers in the text (or the file at *path*) with surrogates; the project's mapping remembers them.
 
     *names*: comma-separated names you already know (the parties). *aliases*: ``Name=Alias,...``
     surrogates you choose yourself. *strategy*: ``counter`` (``[PERSON_1]``), ``keyed-words``
     or ``random-words``. The result carries the text (or the ``out`` path) and the run report.
     """
     p = _pseudonymiser(project, policy=policy, names=names, strategy=strategy, encrypt=encrypt, aliases=aliases)
-    r = p.pseudonymise(_read_source(source))
+    r = p.pseudonymise(_read(text, path))
     return {**_emit(r.text, out), "report": r.report}
 
 
-def reidentify(source: str, *, project: str = "default", out: str | None = None, encrypt: bool = False) -> dict:
-    """Put the originals back into *source* (an AI's answer, say). Lists tokens it could not place."""
+def reidentify(text: str = "", *, path: str = "", project: str = "default", out: str | None = None, encrypt: bool = False) -> dict:
+    """Put the originals back into the text (an AI's answer, say). Lists tokens it could not place."""
     p = Pseudonymiser(project, encrypt=encrypt)
-    r = p.reidentify(_read_source(source))
+    r = p.reidentify(_read(text, path))
     return {**_emit(r.text, out), "restored": r.restored, "unmatched": r.unmatched}
 
 
-def detect(source: str, *, names: str = "", policy: str = "default") -> list[dict]:
+def detect(text: str = "", *, path: str = "", names: str = "", policy: str = "default") -> list[dict]:
     """The spans the deterministic pass finds, with the policy's decision for each. Nothing is stored."""
     pol = POLICIES[policy]()
     p = Pseudonymiser("detect-only", store={}, policy=pol, names=_split(names))
-    return [{**s.to_dict(), "action": "replace" if pol.accepts(s) else "keep"} for s in p.detect(_read_source(source))]
+    return [{**s.to_dict(), "action": "replace" if pol.accepts(s) else "keep"} for s in p.detect(_read(text, path))]
 
 
-def check(source: str, *, project: str = "default", encrypt: bool = False) -> dict:
-    """Originals of *project* that occur in *source*: what would leak if this text were sent."""
+def check(text: str = "", *, path: str = "", project: str = "default", encrypt: bool = False) -> dict:
+    """Originals of *project* that occur in the text: what would leak if this text were sent."""
     p = Pseudonymiser(project, encrypt=encrypt)
-    leaks = p.check(_read_source(source))
+    leaks = p.check(_read(text, path))
     return {"ok": not leaks, "leaks": leaks}
 
 
@@ -105,7 +109,9 @@ def mapping(project: str = "default", *, encrypt: bool = False) -> list[dict]:
 
 def readable(value: str, *, project: str = "default", entity_type: str = "VALUE", n_words: int = 2) -> str:
     """A keyed hash of *value* under the project's key, rendered as readable words."""
-    return _readable(value, key=Pseudonymiser(project, store={}).key, entity_type=entity_type, n_words=n_words)
+    from nyms.keys import resolve_key
+
+    return _readable(value, key=resolve_key(project), entity_type=entity_type, n_words=n_words)
 
 
 def policies() -> dict:

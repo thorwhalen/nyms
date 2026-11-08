@@ -69,6 +69,12 @@ ENTITY_TYPES: dict[str, EntityType] = dict(
 )
 
 
+#: The pseudo-type of a span that is one of the project's own surrogates. Such spans take
+#: part in overlap resolution (so a surrogate is never re-detected as a name) and are then
+#: dropped: a policy never acts on them.
+SURROGATE_TYPE = "SURROGATE"
+
+
 def tier_of(entity_type: str) -> int:
     """The tier of a type, ``2`` for an unregistered one (policy decides).
 

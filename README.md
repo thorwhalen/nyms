@@ -22,11 +22,16 @@ p.check("Rasmus Jensen bor her")      # what would leak if this were sent
 The same four verbs from the shell:
 
 ```bash
-nyms pseudonymise letter.md --project case-2026 --names "Rasmus Østergaard Jensen" --out letter.pseud.md
-nyms reidentify answer.md --project case-2026 --out answer.clear.md
-nyms check draft.md --project case-2026            # {"ok": false, "leaks": [...]} if an original is in it
-nyms detect letter.md                              # every span and the policy's decision; nothing stored
-nyms readable 010190-1234 --project case-2026      # a keyed hash as two readable words
+nyms pseudonymise --path letter.md --project case-2026 --names "Rasmus Østergaard Jensen" --out letter.pseud.md
+nyms reidentify --path answer.md --project case-2026 --out answer.clear.md
+nyms check --path draft.md --project case-2026       # {"ok": false, "leaks": [...]} if an original is in it
+nyms detect "Rasmus Jensen, tlf. 12 34 56 78"        # every span and the policy's decision; nothing stored
+nyms readable 010190-1234 --project case-2026        # a keyed hash as two readable words
+```
+
+Content is positional text or `--path` (a file, or `-` for stdin), never guessed from one another.
+
+```bash
 ```
 
 `r.report` says what was replaced (by type and by detector), what was detected and kept (dates, postcodes and URLs, under the default policy) and which detectors ran, and ends with the caveat that this is pseudonymisation, not anonymisation.
@@ -35,7 +40,7 @@ nyms readable 010190-1234 --project case-2026      # a keyed hash as two readabl
 
 Danish: CPR numbers (the date part must be valid; the pre-2007 modulus-11 check only raises confidence, because numbers issued since October 2007 need not pass it), CVR numbers (modulus-11 and context), DK VAT numbers, phone numbers, bank account numbers (registreringsnummer and kontonummer), IBAN (mod-97), street addresses with floor and postcode, postcode and town, amounts (`12.500 kr.`, `DKK 12.500`, `36.000,-`), dates, court and journal numbers. English: addresses, phone numbers, amounts (`£4,250.00`, `$5,000`), dates. Both: e-mail, URLs, IBAN, credentials (API keys, tokens, private keys), organisation names by legal form (`ApS`, `A/S`, `Ltd`, `GmbH`), names after a title (`Hr.`, `advokat`, `Mr`, `Dr`), names from a bundled Danish and English first-name list, names you pass in (`names=`), and a low-confidence heuristic for capitalised sequences.
 
-Once a value has been replaced anywhere in a project, every later occurrence is replaced too, including a Danish genitive (`Rasmus Jensens` becomes `[PERSON_1]s`).
+Once a value has been replaced anywhere in a project, every later occurrence is replaced too, including a Danish genitive (`Rasmus Jensens` becomes `[PERSON_1]s`), ALL-CAPS headings, and a surname or first name alone when it identifies exactly one known person (`Jensen blev` becomes `[PERSON_1] blev`). An identifier inside something the policy keeps (a CPR number in a URL) is still replaced. Pseudonymising already pseudonymised text changes nothing.
 
 It does not find: names it has never seen and the heuristic misses, roles and rare facts that identify without an identifier, inflected compounds, OCR-damaged identifiers. The report's `kept` list and the `check` command exist so a reader sees what stayed.
 
@@ -54,7 +59,7 @@ A `Policy` decides after detection, so the report can say what it saw and kept. 
 
 `KeyedWords` is an HMAC-SHA-256 under the project key rendered as words from the EFF short wordlist (1,296 words, 10.3 bits each). The renderer stands alone as `nyms.readable(value, key=...)` and `nyms readable`. There is no unkeyed option: a plain hash of a CPR number is undone by enumerating the ten billion candidates.
 
-Re-identification is tolerant of what models do to tokens (case, spacing, a dropped bracket, a genitive after it) and never guesses: tokens it did not issue come back in `unmatched`.
+Re-identification is tolerant of what models do to bracketed tokens (case, spacing, a dropped bracket, a genitive after it); name-shaped surrogates and aliases are matched exactly, so ordinary prose is left alone. It never guesses: tokens it did not issue come back in `unmatched`.
 
 ## Where the mapping and the key live
 
@@ -80,6 +85,6 @@ The skill folder also ships inside the wheel: `python -c "import nyms, os; print
 
 ## Design
 
-The research behind the design (terminology and regulation, detection libraries and methods, surrogates and key management, pipeline architecture) is in [`docs/research/`](docs/research/), with a [synthesis](docs/research/deidentification-synthesis.md); the decisions are in [`docs/adr/`](docs/adr/). Five seams, each one keyword argument of `Pseudonymiser`: `detectors`, `policy`, `strategy`, `store`, `key`. A model-based second pass is a detector added to `detectors`; it is not built in v1.
+The research behind the design (terminology and regulation, detection libraries and methods, surrogates and key management, pipeline architecture) is in [`docs/research/`](docs/research/), with a [synthesis](docs/research/deidentification-synthesis.md); the decisions are in [`docs/adr/`](docs/adr/). Six seams, each one keyword argument of `Pseudonymiser`: `detectors`, `post_detectors`, `policy`, `strategy`, `store`, `key`. The model-based second pass is the `post_detectors` seam: any callable `text -> spans`, run on the already-pseudonymised text with the surrogates protected; none ships in v1.
 
 The EFF wordlist is CC BY 3.0 (see `nyms/data/wordlists/NOTICE.md`). Everything else is MIT.

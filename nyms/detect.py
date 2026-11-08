@@ -2,8 +2,9 @@
 
 This is the pre-AI pass. Each :class:`Detector` is a compiled pattern plus an optional
 validator (a checksum, a calendar check, a stop list) and optional context words that raise
-the score when they appear shortly before the match. A detector is a callable
-``text -> Iterator[Span]``; a set of them is run by :func:`detect`, which resolves overlaps.
+the score when they appear shortly before the match. Any callable ``text -> Iterable[Span]``
+is a detector (:class:`DetectorLike`); :class:`Detector` is the regex-backed one this module
+ships. A set of them is run by :func:`detect_raw`; :func:`detect` also resolves overlaps.
 
 Design notes, with the research behind them (``docs/research/detection-libraries-and-methods.md``):
 
@@ -15,6 +16,10 @@ Design notes, with the research behind them (``docs/research/detection-libraries
 - Recall over precision: a missed identifier leaks, a redundant replacement only costs
   readability. The capitalised-sequence name heuristic therefore exists, at a low score, and
   the policy threshold decides whether it acts.
+- Letters are the Latin letters of Unicode's Basic Latin, Latin-1 Supplement and Latin
+  Extended-A and B blocks, upper and lower case as Unicode classifies them, so Danish, Polish,
+  Turkish and Spanish names are all names. Text is NFC-normalised by the facade before
+  detection, so a decomposed ``ø`` is the same letter as a composed one.
 - Credential patterns follow the design of ``openloops.egress`` (vendor prefixes first, one
   heuristic rule last).
 
@@ -26,17 +31,37 @@ Design notes, with the research behind them (``docs/research/detection-libraries
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass, field
 from functools import lru_cache
 from importlib import resources
+from typing import Protocol, runtime_checkable
 
 from nyms.spans import Span, resolve_overlaps
+from nyms.taxonomy import SURROGATE_TYPE
 
 Validator = Callable[[re.Match], "float | bool | None"]
 
 CONTEXT_WINDOW = 40  # characters before the match in which a context word counts
 CONTEXT_BOOST = 0.3
+
+
+@runtime_checkable
+class DetectorLike(Protocol):
+    """Anything that turns text into spans. ``name`` and ``entity_type`` are optional."""
+
+    def __call__(self, text: str) -> Iterable[Span]: ...
+
+
+def detector_name(detector) -> str:
+    """The name a detector reports under: its ``name`` attribute, else its function name."""
+    return getattr(detector, "name", None) or getattr(detector, "__name__", None) or type(detector).__name__
+
+
+def detector_entity_type(detector) -> str | None:
+    """The single entity type a detector emits, when it declares one (regex detectors do)."""
+    return getattr(detector, "entity_type", None)
 
 
 @dataclass(frozen=True)
@@ -45,7 +70,8 @@ class Detector:
 
     ``validate(match)`` may return ``False`` (drop), ``True``/``None`` (keep the base
     score) or a float (use it as the score). ``group`` picks the capture group that is
-    the span (the whole match by default).
+    the span (the whole match by default). ``value_of(match)`` may name the canonical value
+    the span stands for when it differs from the matched text.
     """
 
     name: str
@@ -55,6 +81,7 @@ class Detector:
     validate: Validator | None = None
     group: int | str = 0
     context: tuple[str, ...] = field(default_factory=tuple)
+    value_of: Callable[[re.Match], str | None] | None = None
 
     def __call__(self, text: str) -> Iterator[Span]:
         ctx = _context_re(self.context) if self.context else None
@@ -71,7 +98,8 @@ class Detector:
                 continue
             if ctx is not None and ctx.search(text[max(0, start - CONTEXT_WINDOW) : start]):
                 score = min(1.0, score + CONTEXT_BOOST)
-            yield Span(start, end, self.entity_type, text[start:end], round(score, 3), self.name)
+            value = self.value_of(m) if self.value_of is not None else None
+            yield Span(start, end, self.entity_type, text[start:end], round(score, 3), self.name, value)
 
 
 @lru_cache(maxsize=None)
@@ -79,7 +107,16 @@ def _context_re(words: tuple[str, ...]) -> re.Pattern:
     return re.compile(r"(?i)(?<![\w])(?:" + "|".join(re.escape(w) for w in words) + r")")
 
 
-def detect_raw(text: str, detectors: Iterable[Detector] | None = None) -> list[Span]:
+def normalise_text(text: str) -> str:
+    """NFC normalisation and CRLF to LF: the form every detector sees.
+
+    >>> normalise_text('o\\u0308') == '\\u00f6'
+    True
+    """
+    return unicodedata.normalize("NFC", text).replace("\r\n", "\n")
+
+
+def detect_raw(text: str, detectors: Iterable[DetectorLike] | None = None) -> list[Span]:
     """Run *detectors* (default: :func:`default_detectors`); every span, overlaps included."""
     detectors = default_detectors() if detectors is None else detectors
     found: list[Span] = []
@@ -88,7 +125,7 @@ def detect_raw(text: str, detectors: Iterable[Detector] | None = None) -> list[S
     return found
 
 
-def detect(text: str, detectors: Iterable[Detector] | None = None) -> list[Span]:
+def detect(text: str, detectors: Iterable[DetectorLike] | None = None) -> list[Span]:
     """Run *detectors* (default: :func:`default_detectors`) and resolve overlaps."""
     return resolve_overlaps(detect_raw(text, detectors))
 
@@ -164,7 +201,9 @@ def _cpr_validate(m: re.Match):
 
 
 def _cvr_validate(m: re.Match):
-    return 0.5 if cvr_ok(m.group(0)) else False
+    # One eight-digit number in eleven passes the checksum by chance: below the default
+    # threshold on its own, above it with a context word ("CVR", "SE-nr") or the DK prefix.
+    return 0.4 if cvr_ok(m.group(0)) else False
 
 
 def _dk_phone_validate(m: re.Match):
@@ -178,22 +217,34 @@ def _iban_validate(m: re.Match):
     return 1.0 if iban_ok(m.group(0)) else False
 
 
-# --------------------------------------------------------------------------- patterns
+# --------------------------------------------------------------------------- letter classes
 
-_UC = "A-ZÆØÅÉÜÖÄ"
-_LC = "a-zæøåéüöäß"
-_CAP_WORD = rf"[{_UC}][{_LC}]+(?:-[{_UC}][{_LC}]+)?"
+
+def _latin_letters(category: str) -> str:
+    """Latin letters of one Unicode category (``Lu`` or ``Ll``) from the blocks up to Extended-B."""
+    ranges = (range(0x41, 0x5B), range(0x61, 0x7B), range(0xC0, 0x250))
+    return "".join(chr(c) for r in ranges for c in r if unicodedata.category(chr(c)) == category)
+
+
+_UC = re.escape(_latin_letters("Lu"))
+_LC = re.escape(_latin_letters("Ll"))
+
+#: A capitalised word (``Jensen``, ``Anne-Marie``) or an all-capitals one (``JENSEN``), as in
+#: headings; a single capital letter is not a word (so ``N`` in ``København N`` is a suffix).
+_CAP_WORD = rf"(?:[{_UC}][{_LC}]+(?:-[{_UC}][{_LC}]+)?|[{_UC}]{{2,}}(?:-[{_UC}]{{2,}})?)"
+_INITIALS = rf"(?:[{_UC}]\.\s?){{1,3}}"
 _PARTICLE = r"(?:von|van|de|der|den|af|la|le|du|di|da)"
 # Each step of a name's tail is a capitalised word or an initial, optionally preceded by a
 # particle ("von", "af"); a particle never ends a name ("Mette Holm af 2. september").
 _NAME_TAIL = rf"(?:\s(?:{_PARTICLE}\s)?(?:{_CAP_WORD}|[{_UC}]\.)){{0,3}}"
-_GENITIVE = r"(?:'s|’s|s)?"
+
+# --------------------------------------------------------------------------- patterns
 
 _DK_STREET_SUFFIX = (
     r"(?:vej|vejen|gade|gaden|allé|alle|plads|boulevard|stræde|vænge|vænget|vang|vangen|parken|park|haven|have|"
     r"torv|torvet|bakke|bakken|høj|højen|holm|holmen|stien|sti|marken|mark|dalen|dal|lund|lunden|gården|gård|"
     r"kær|kæret|skoven|skov|ager|ageren|toften|toft|engen|eng|bro|broen|strand|stranden|kvarter|kvarteret|"
-    r"centret|center|krogen|krog|hegnet|hegn|gyde|gyden|led|leddet|husene|huse|bakkevej|søvej|strandvej)"
+    r"centret|center|krogen|krog|hegnet|hegn|gyde|gyden|led|leddet|husene|huse)"
 )
 _DK_STREET = rf"{_CAP_WORD}(?:\s{_CAP_WORD}){{0,3}}"
 # A floor is "st.", "kl." or "3." (the period is mandatory, or ", 16" of a postcode would be a floor).
@@ -227,29 +278,27 @@ _CUR = r"(?:DKK|kr\.?|EUR|€|USD|\$|£|GBP|SEK|NOK|CHF)"
 # upper-case word or the end of the text the period is the sentence's, not the unit's.
 _CUR_SUFFIX = rf"(?:DKK|kr\.(?!\s*(?:[{_UC}]|$))|kr|EUR|€|USD|\$|£|GBP|SEK|NOK|CHF)"
 _NUM = r"(?:\d{1,3}(?:[.,\s]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?)"
-_SCALE = r"(?:\s?(?:mio\.?|mia\.?|mill\.?|millioner|million|billion|tusind|thousand|k)\b)?"
+_SCALE = r"(?:\s?(?:mio|mia|mill|millioner|million|billion|tusind|thousand|k)\.?(?=[\s,;)]|$))?"
 _AMOUNT = re.compile(
     rf"(?<![\w.,]){_CUR}\s?{_NUM}{_SCALE}(?![\d])|(?<![\w.,]){_NUM}{_SCALE}\s?(?:{_CUR_SUFFIX}|,-)(?![{_LC}])"
 )
 
-_MONTHS_DA = r"(?:januar|februar|marts|april|maj|juni|juli|august|september|oktober|november|december)"
+_MONTHS_DA = r"(?:januar|februar|marts|april|maj|juni|juli|august|september|oktober|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|okt|nov|dec)\.?"
 _MONTHS_EN = (
     r"(?:January|February|March|April|May|June|July|August|September|October|November|December|"
     r"Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?"
 )
 _DATE = re.compile(
     r"(?<!\d)(?:\d{4}-\d{2}-\d{2}|\d{1,2}[./-]\d{1,2}[./-](?:\d{4}|\d{2}))(?!\d)"
-    rf"|(?<![\w])(?:den\s)?\d{{1,2}}\.?\s{_MONTHS_DA}(?:\s\d{{4}})?\b"
+    rf"|(?<![\w])(?:den\s)?\d{{1,2}}\.?\s{_MONTHS_DA}(?:\s\d{{4}})?(?![{_LC}])"
     rf"|(?<![\w])\d{{1,2}}(?:st|nd|rd|th)?\s(?:of\s)?{_MONTHS_EN}(?:,?\s\d{{4}})?\b"
     rf"|(?<![\w]){_MONTHS_EN}\s\d{{1,2}}(?:st|nd|rd|th)?(?:,?\s\d{{4}})?\b"
 )
 
-_CASE_ID = re.compile(
-    r"\b(?:BS|SS|B|S|K|V)-\d{1,6}/\d{4}(?:-[A-Z]{3})?\b"
-    r"|(?i:(?:sagsnr|sags\s?nr|j\.?\s?nr|journalnr|sag\s?nr|case\s(?:no|number)|ref\.?\s?nr)\.?\s*:?\s*)(?P<id>[A-Z0-9][\w\-/.]{3,})"
+_CASE_ID_CODE = re.compile(r"\b(?:BS|SS|B|S|K|V)-\d{1,6}/\d{4}(?:-[A-Z]{3})?\b")
+_CASE_ID_LABELLED = re.compile(
+    r"(?i:(?:sagsnr|sags\s?nr|j\.?\s?nr|journalnr|sag\s?nr|case\s(?:no|number)|ref\.?\s?nr)\.?\s*:?\s*)(?P<id>[A-Z0-9][\w\-/]{3,}(?<![.,;]))"
 )
-
-
 
 _CREDENTIAL_PATTERNS = [
     ("aws_access_key_id", r"(?<![A-Z0-9])(?:AKIA|ASIA)[0-9A-Z]{16}(?![A-Z0-9])"),
@@ -272,14 +321,18 @@ _TITLES = (
     r"(?:\b(?:Hr|Fru|Frk|Mr|Mrs|Ms|Mx|Dr|Prof|Adv|Sir)\.?|\b(?:advokat|Advokat|direktør|Direktør|sagsøger|Sagsøger|"
     r"sagsøgte|Sagsøgte|klager|Klager|indklagede|Indklagede|lejer|Lejer|udlejer|Udlejer|vidne|Vidne|dommer|Dommer))"
 )
-_TITLE_NAME = re.compile(rf"{_TITLES}\s+(?P<name>{_CAP_WORD}{_NAME_TAIL})")
+_TITLE_NAME = re.compile(rf"{_TITLES}\s+(?P<name>(?:{_INITIALS})?{_CAP_WORD}{_NAME_TAIL})")
 
-_HEURISTIC_NAME = re.compile(rf"(?<![{_UC}{_LC}\-])(?P<name>{_CAP_WORD}(?:\s(?:{_PARTICLE}\s)?{_CAP_WORD}){{1,3}})(?![{_UC}{_LC}])")
+_HEURISTIC_NAME = re.compile(
+    rf"(?<![{_UC}{_LC}\-])(?P<name>(?:{_INITIALS}|{_CAP_WORD})(?:\s(?:{_PARTICLE}\s)?{_CAP_WORD}){{1,3}})(?![{_UC}{_LC}])"
+)
 
 _ORG_SUFFIX = r"(?:ApS|A/S|I/S|IVS|K/S|P/S|Ltd\.?|Limited|Inc\.?|LLC|LLP|PLC|GmbH|AG|SA|S\.A\.|BV|B\.V\.|AB|AS|ASA|Oy|Oyj|Corp\.?|Co\.|Holding|Fonden|Foundation)"
-_ORG_NAME = re.compile(rf"(?<![{_UC}{_LC}\-])(?P<name>{_CAP_WORD}(?:\s(?:(?:&|og|and|{_PARTICLE})\s)?{_CAP_WORD}){{0,4}}\s{_ORG_SUFFIX})(?![{_UC}{_LC}])")
+_ORG_NAME = re.compile(
+    rf"(?<![{_UC}{_LC}\-])(?P<name>{_CAP_WORD}(?:\s(?:(?:&|og|and|{_PARTICLE})\s)?{_CAP_WORD}){{0,4}}\s{_ORG_SUFFIX})(?![{_UC}{_LC}])"
+)
 
-#: Capitalised words that start a sequence which is not a person's name.
+#: Capitalised words that start or end a sequence which is not a person's name.
 NAME_STOPWORDS = frozenset(
     w.casefold()
     for w in (
@@ -291,14 +344,15 @@ NAME_STOPWORDS = frozenset(
         "Subject Re Date Page Attachment Section Article Court High Supreme District Appeal Appeals European Union United Kingdom "
         "States America Denmark Danish English Monday Tuesday Wednesday Thursday Friday Saturday Sunday January February March "
         "April June July August September October November December Mandag Tirsdag Onsdag Torsdag Fredag Lørdag Søndag "
-        "Januar Februar Marts Maj Juni Juli Oktober Google Microsoft Apple Claude Anthropic OpenAI ChatGPT"
+        "Januar Februar Marts Maj Juni Juli Oktober Jan Feb Mar Apr Jun Jul Aug Sep Sept Okt Oct Nov Dec "
+        "CPR CVR IBAN BIC SWIFT DKK EUR USD GBP SEK NOK NR Nr ApS IVS LLC Ltd PLC GmbH Google Microsoft Apple Claude Anthropic OpenAI ChatGPT"
     ).split()
 )
 
 
 def _heuristic_name_validate(m: re.Match):
     words = m.group("name").split()
-    if words[0].casefold() in NAME_STOPWORDS or words[-1].casefold() in NAME_STOPWORDS:
+    if words[0].casefold().rstrip(".") in NAME_STOPWORDS or words[-1].casefold() in NAME_STOPWORDS:
         return False
     if all(w.casefold() in NAME_STOPWORDS for w in words):
         return False
@@ -323,46 +377,44 @@ def bundled_first_names(*languages: str) -> frozenset[str]:
 
 
 def gazetteer_detector(
-    names: Iterable[str], *, name: str = "gazetteer", entity_type: str = "PERSON", score: float = 1.0, surname_tail: bool = True
+    names: Iterable[str],
+    *,
+    name: str = "gazetteer",
+    entity_type: str = "PERSON",
+    score: float = 1.0,
+    surname_tail: bool = True,
+    value_of_name: Callable[[str], str | None] | None = None,
+    single_word_score: float = 0.85,
 ) -> Detector:
-    """A detector for a list of known names (full names or first names).
+    """A detector for a list of known names (full names or first names), case-insensitive.
 
     A first name followed by capitalised words extends to the full name when *surname_tail*
-    is true. The Danish genitive ``-s`` is left outside the span so the same person maps to
-    the same surrogate; the core re-attaches it.
+    is true. A genitive ``s`` on the last word stays in the span; the mapping store decides
+    whether it is a genitive of a known value. *value_of_name* may map the matched text to the
+    canonical value it stands for (a surname to the full name).
 
     >>> d = gazetteer_detector(['Rasmus'])
     >>> [s.text for s in d('Rasmus Jensens bil, og Rasmus selv.')]
-    ['Rasmus Jensen', 'Rasmus']
+    ['Rasmus Jensens', 'Rasmus']
     """
     alts = sorted({n.strip() for n in names if n.strip()}, key=len, reverse=True)
     if not alts:
         return Detector(name, entity_type, re.compile(r"(?!x)x"), score)
     alt = "|".join(re.escape(n) for n in alts)
     tail = _NAME_TAIL if surname_tail else ""
-    pattern = re.compile(rf"(?<![{_UC}{_LC}])(?P<name>(?i:{alt}){tail})(?=s\b|'s|’s|[^{_UC}{_LC}]|$)")
+    # The list is matched case-insensitively (headings are upper case) but the head must start
+    # with a capital: "jan" in "1. jan. 2024" is a month, "Jan" is a name. A genitive "s" after
+    # the name is matched but left outside the span.
+    pattern = re.compile(rf"(?<![{_UC}{_LC}])(?P<name>(?i:{alt})(?:-{_CAP_WORD})?{tail})(?:(?:'s|’s|s)(?![{_UC}{_LC}])|(?![{_UC}{_LC}]))")
 
     def validate(m: re.Match):
-        return score if " " in m.group("name") else min(score, 0.85)
+        name = m.group("name")
+        if not name[0].isupper():
+            return False
+        return score if " " in name else min(score, single_word_score)
 
-    return _Gazetteer(name, entity_type, pattern, score, validate, "name")
-
-
-class _Gazetteer(Detector):
-    """A gazetteer detector that strips a genitive ``s`` from a matched surname."""
-
-    def __call__(self, text: str) -> Iterator[Span]:
-        for s in super().__call__(text):
-            yield _strip_surname_genitive(s)
-
-
-def _strip_surname_genitive(span: Span) -> Span:
-    """``Rasmus Jensens`` -> ``Rasmus Jensen`` when the last word has a trailing ``s``."""
-    words = span.text.split()
-    if len(words) > 1 and words[-1].endswith("s") and len(words[-1]) > 3 and not words[-1].endswith("ss"):
-        new_text = span.text[:-1]
-        return Span(span.start, span.end - 1, span.entity_type, new_text, span.score, span.detector)
-    return span
+    value_of = (lambda m: value_of_name(m.group("name"))) if value_of_name else None
+    return Detector(name, entity_type, pattern, score, validate, "name", value_of=value_of)
 
 
 def default_detectors(*, names: Iterable[str] = (), languages: tuple[str, ...] = ("da", "en")) -> list[Detector]:
@@ -374,7 +426,7 @@ def default_detectors(*, names: Iterable[str] = (), languages: tuple[str, ...] =
     detectors = [
         Detector("cpr", "CPR", re.compile(r"(?<![\d])\d{6}-?\d{4}(?![\d])"), 0.9, _cpr_validate,
                  context=("cpr", "cpr-nr", "cpr-nummer", "personnummer", "person nr", "fødselsnummer")),
-        Detector("cvr", "CVR", re.compile(r"(?<![\w])\d{8}(?![\d])"), 0.5, _cvr_validate,
+        Detector("cvr", "CVR", re.compile(r"(?<![\w])\d{8}(?![\d])"), 0.4, _cvr_validate,
                  context=("cvr", "cvr-nr", "cvr-nummer", "se-nr", "se-nummer", "vat", "moms")),
         Detector("dk_vat", "CVR", re.compile(r"\bDK\s?\d{8}\b"), 0.95),
         Detector("email", "EMAIL", re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"), 1.0),
@@ -389,7 +441,8 @@ def default_detectors(*, names: Iterable[str] = (), languages: tuple[str, ...] =
         Detector("dk_postcode_city", "POSTCODE_CITY", re.compile(rf"(?<![\d]){_DK_POSTCODE_CITY}(?![{_LC}])"), 0.6),
         Detector("amount", "AMOUNT", _AMOUNT, 0.95),
         Detector("date", "DATE", _DATE, 0.9),
-        Detector("case_id", "CASE_ID", _CASE_ID, 0.9),
+        Detector("case_id", "CASE_ID", _CASE_ID_CODE, 0.9),
+        Detector("case_id_labelled", "CASE_ID", _CASE_ID_LABELLED, 0.9, None, "id"),
         Detector("url", "URL", re.compile(r"\bhttps?://[^\s<>\"')\]]+|\bwww\.[^\s<>\"')\]]+"), 1.0),
         Detector("org_name", "ORG", _ORG_NAME, 0.9, None, "name"),
         Detector("title_name", "PERSON", _TITLE_NAME, 0.9, None, "name"),
@@ -407,21 +460,61 @@ def default_detectors(*, names: Iterable[str] = (), languages: tuple[str, ...] =
     return detectors
 
 
-def known_values_detectors(records: Iterable, *, score: float = 1.0) -> list[Detector]:
-    """One detector per entity type for the originals already in a mapping store.
+def name_components(full_names: Iterable[str]) -> dict[str, str]:
+    """``{component: full name}`` for the tokens that identify exactly one of *full_names*.
 
-    Names and organisations go through :func:`gazetteer_detector` (word boundaries, genitive
-    handling); everything else is matched literally. This is what makes every occurrence of a
-    known value consistent, within a document and across the project.
+    A surname or first name alone stands for the person when no other known name shares it;
+    stop words, short tokens and particles never do.
+
+    >>> name_components(['Rasmus Jensen', 'Mette Jensen'])
+    {'rasmus': 'Rasmus Jensen', 'mette': 'Mette Jensen'}
     """
+    owners: dict[str, set[str]] = {}
+    for full in full_names:
+        words = full.split()
+        if len(words) < 2:
+            continue
+        for w in words:
+            key = w.casefold().strip(".,")
+            if len(key) < 3 or key in NAME_STOPWORDS or re.fullmatch(_PARTICLE, key):
+                continue
+            owners.setdefault(key, set()).add(full)
+    return {k: next(iter(v)) for k, v in owners.items() if len(v) == 1}
+
+
+def known_values_detectors(records: Iterable, *, extra_names: Iterable[str] = (), score: float = 1.0) -> list[Detector]:
+    """Detectors for what a project already knows: its values, their name components, its surrogates.
+
+    - every original in the mapping, by type: names through :func:`gazetteer_detector` (word
+      boundaries, genitive), everything else literally;
+    - for persons, each component (first name or surname) that identifies exactly one known
+      person, standing for the full name (``Span.value``), scored above a lone first name from
+      the bundled list so the known person wins;
+    - every surrogate already issued, as :data:`SURROGATE_TYPE`, so the project's own
+      surrogates are never re-detected as names when pseudonymised text is processed again.
+    """
+    recs = list(getattr(records, "records", lambda: records)())
     by_type: dict[str, set[str]] = {}
-    for rec in getattr(records, "records", lambda: records)():
+    for rec in recs:
         by_type.setdefault(rec.entity_type, set()).add(rec.original)
-    out = []
+    out: list[Detector] = []
     for entity_type, values in sorted(by_type.items()):
         if entity_type in ("PERSON", "ORG"):
             out.append(gazetteer_detector(values, name="known_values", entity_type=entity_type, score=score, surname_tail=False))
         else:
             alt = "|".join(re.escape(v) for v in sorted(values, key=len, reverse=True))
             out.append(Detector("known_values", entity_type, re.compile(rf"(?<![\w])(?:{alt})(?![\w])"), score))
+    persons = by_type.get("PERSON", set()) | {n for n in extra_names if n and n.strip()}
+    components = name_components(persons)
+    if components:
+        out.append(
+            gazetteer_detector(
+                components, name="known_components", entity_type="PERSON", score=0.95, surname_tail=False, single_word_score=0.95,
+                value_of_name=lambda text: components.get(re.sub(r"(?:'s|’s|s)$", "", text.casefold()), components.get(text.casefold())),
+            )
+        )
+    surrogates = sorted({r.surrogate for r in recs}, key=len, reverse=True)
+    if surrogates:
+        alt = "|".join(re.escape(s) for s in surrogates)
+        out.append(Detector("surrogates", SURROGATE_TYPE, re.compile(rf"(?<![\w])(?:{alt})(?![\w])"), 1.0))
     return out
