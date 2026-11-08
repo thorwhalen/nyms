@@ -1,0 +1,23 @@
+# nyms
+
+> Reversible pseudonymisation of text: deterministic detection of personal and sensitive identifiers, keyed surrogate generation (readable pseudonyms included), and re-identification through a mapping store.
+
+
+## Pages in this subsection
+
+- [nyms](nyms.html.md): nyms: reversible pseudonymisation of text before it reaches an AI.
+- [nyms.core](nyms.core.html.md): The facade: detect, pseudonymise, re-identify, check. One object, six seams.
+- [nyms.data](nyms.data.html.md): Bundled data files (data), shipped inside the wheel.
+- [nyms.data.names](nyms.data.names.html.md): Bundled data files (names), shipped inside the wheel.
+- [nyms.data.wordlists](nyms.data.wordlists.html.md): Bundled data files (wordlists), shipped inside the wheel.
+- [nyms.keys](nyms.keys.html.md): Key management for a single user or a small team: where the project’s secret lives.
+- [nyms.mapping](nyms.mapping.html.md): The reversible mapping store: surrogate &lt;-&gt; original, per project, on a &#96;dol&#96; store.
+- [nyms.policy](nyms.policy.html.md): The sensitivity policy: which detected spans get replaced, which are kept and reported.
+- [nyms.spans](nyms.spans.html.md): Spans: where a detector found something, and how findings are merged and applied.
+- [nyms.surrogates](nyms.surrogates.html.md): Surrogate (pseudonym) generation: what replaces a detected value.
+- [nyms.taxonomy](nyms.taxonomy.html.md): The entity taxonomy: what kinds of things nyms detects, and how sensitive each is.
+- [nyms.tools](nyms.tools.html.md): The SSOT of operations: plain functions, JSON-able in and out, surface-agnostic.
+
+## Optional
+
+- [Top-level llms.txt](../llms.txt): Complete documentation index.

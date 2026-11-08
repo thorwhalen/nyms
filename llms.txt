@@ -1,0 +1,31 @@
+# nyms
+
+> Reversible pseudonymisation of text: deterministic detection of personal and sensitive identifiers, keyed surrogate generation (readable pseudonyms included), and re-identification through a mapping store.
+
+
+## Pages
+
+- [nyms](index.html.md): Reversible pseudonymisation of text before it reaches an AI. A deterministic (non-AI) pass finds per...
+- [API reference](api.html.md): | &#96;nyms&#96;   | nyms: reversible pseudonymisation of text before it reaches an AI.   |
+- [nyms](_autosummary/nyms.html.md): nyms: reversible pseudonymisation of text before it reaches an AI.
+- [nyms.core](_autosummary/nyms.core.html.md): The facade: detect, pseudonymise, re-identify, check. One object, six seams.
+- [nyms.data](_autosummary/nyms.data.html.md): Bundled data files (data), shipped inside the wheel.
+- [nyms.data.names](_autosummary/nyms.data.names.html.md): Bundled data files (names), shipped inside the wheel.
+- [nyms.data.wordlists](_autosummary/nyms.data.wordlists.html.md): Bundled data files (wordlists), shipped inside the wheel.
+- [nyms.keys](_autosummary/nyms.keys.html.md): Key management for a single user or a small team: where the project’s secret lives.
+- [nyms.mapping](_autosummary/nyms.mapping.html.md): The reversible mapping store: surrogate &lt;-&gt; original, per project, on a &#96;dol&#96; store.
+- [nyms.policy](_autosummary/nyms.policy.html.md): The sensitivity policy: which detected spans get replaced, which are kept and reported.
+- [nyms.spans](_autosummary/nyms.spans.html.md): Spans: where a detector found something, and how findings are merged and applied.
+- [nyms.surrogates](_autosummary/nyms.surrogates.html.md): Surrogate (pseudonym) generation: what replaces a detected value.
+- [nyms.taxonomy](_autosummary/nyms.taxonomy.html.md): The entity taxonomy: what kinds of things nyms detects, and how sensitive each is.
+- [nyms.tools](_autosummary/nyms.tools.html.md): The SSOT of operations: plain functions, JSON-able in and out, surface-agnostic.
+- [For AI agents](ai-agents.html.md): &#96;nyms&#96; ships artifacts for coding agents alongside its code. This page lists
+- [About this build](about-this-build.html.md): This documentation was built on &#42;&#42;2026-11-08 07:52 UTC&#42;&#42; from commit &lt;a href="https://github.com/tho...
+
+## Optional
+
+- [nyms.md](nyms.md): Complete documentation in a single file.
+
+## Build
+
+- [build_info.json](build_info.json): build provenance (commit, version, tool versions, whether the docs match the package)

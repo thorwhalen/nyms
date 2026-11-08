@@ -1,0 +1,54 @@
+﻿nyms
+====
+
+.. automodule:: nyms
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      default_detectors
+      detect
+      gazetteer_detector
+      known_values_detectors
+      local_mapping_store
+      normalise
+      apply_replacements
+      resolve_overlaps
+      readable
+      words_from_bytes
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Pseudonymiser
+      Reidentified
+      Result
+      Detector
+      DetectorLike
+      MappingStore
+      Policy
+      Span
+      Aliases
+      Counter
+      KeyedWords
+      RandomWords
+      EntityType
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   core
+   data
+   keys
+   mapping
+   policy
+   spans
+   surrogates
+   taxonomy
+   tools

@@ -1,0 +1,6 @@
+nyms.data.wordlists
+===================
+
+.. automodule:: nyms.data.wordlists
+
+   

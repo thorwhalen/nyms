@@ -1,0 +1,32 @@
+nyms.surrogates
+===============
+
+.. automodule:: nyms.surrogates
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      DEFAULT_WORD_TEMPLATES
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      default_wordlist
+      keyed_digest
+      readable
+      syllables_from_bytes
+      words_from_bytes
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Aliases
+      Counter
+      KeyedWords
+      RandomWords
+      Vault
+   

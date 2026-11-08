@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="alternate" type="text/markdown" href="index.html.md">
+<link rel="describedby" href="llms.txt" type="text/markdown">
+<link rel="alternate" type="text/markdown" href="index.html.md">
+<link rel="describedby" href="llms.txt">
+    <title>nyms &#8212; nyms</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_autodoc_typehints.css?v=057ac668" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/epythet.css?v=16d63cf0" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=fd10adb8"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API reference" href="api.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.1" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">nyms</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ai-agents.html">
+    For AI agents
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/thorwhalen/nyms" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ai-agents.html">
+    For AI agents
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/thorwhalen/nyms" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <!-- generated by epythet -->
+<section id="nyms">
+<h1>nyms<a class="headerlink" href="#nyms" title="Link to this heading">#</a></h1>
+<p>Reversible pseudonymisation of text before it reaches an AI. A deterministic (non-AI) pass finds personal and sensitive identifiers in Danish and English text, replaces them with surrogates, remembers the mapping per project so the same person is <code class="docutils literal notranslate"><span class="pre">[PERSON_1]</span></code> in every document, and puts the originals back into whatever the AI answers.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>nyms<span class="w">            </span><span class="c1"># add "nyms[crypto]" for an encrypted mapping store</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">nyms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pseudonymiser</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Pseudonymiser</span><span class="p">(</span><span class="s2">"case-2026"</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">"Rasmus Østergaard Jensen"</span><span class="p">])</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">pseudonymise</span><span class="p">(</span><span class="s2">"Rasmus Jensen (CPR 010190-1234) skylder 12.500 kr. Rasmus Jensens advokat ringede."</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">text</span>
+<span class="c1"># '[PERSON_1] (CPR [CPR_1]) skylder [AMOUNT_1]. [PERSON_1]s advokat ringede.'</span>
+<span class="n">p</span><span class="o">.</span><span class="n">reidentify</span><span class="p">(</span><span class="s2">"Svar: [PERSON_1] skal betale [AMOUNT_1]."</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+<span class="c1"># 'Svar: Rasmus Jensen skal betale 12.500 kr.'</span>
+<span class="n">p</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">"Rasmus Jensen bor her"</span><span class="p">)</span>      <span class="c1"># what would leak if this were sent</span>
+<span class="c1"># ['Rasmus Jensen']</span>
+</pre></div>
+</div>
+<p>The same four verbs from the shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nyms<span class="w"> </span>pseudonymise<span class="w"> </span>--path<span class="w"> </span>letter.md<span class="w"> </span>--project<span class="w"> </span>case-2026<span class="w"> </span>--names<span class="w"> </span><span class="s2">"Rasmus Østergaard Jensen"</span><span class="w"> </span>--out<span class="w"> </span>letter.pseud.md
+nyms<span class="w"> </span>reidentify<span class="w"> </span>--path<span class="w"> </span>answer.md<span class="w"> </span>--project<span class="w"> </span>case-2026<span class="w"> </span>--out<span class="w"> </span>answer.clear.md
+nyms<span class="w"> </span>check<span class="w"> </span>--path<span class="w"> </span>draft.md<span class="w"> </span>--project<span class="w"> </span>case-2026<span class="w">       </span><span class="c1"># {"ok": false, "leaks": [...]} if an original is in it</span>
+nyms<span class="w"> </span>detect<span class="w"> </span><span class="s2">"Rasmus Jensen, tlf. 12 34 56 78"</span><span class="w">        </span><span class="c1"># every span and the policy's decision; nothing stored</span>
+nyms<span class="w"> </span>readable<span class="w"> </span><span class="m">010190</span>-1234<span class="w"> </span>--project<span class="w"> </span>case-2026<span class="w">        </span><span class="c1"># a keyed hash as two readable words</span>
+</pre></div>
+</div>
+<p>Content is positional text or <code class="docutils literal notranslate"><span class="pre">--path</span></code> (a file, or <code class="docutils literal notranslate"><span class="pre">-</span></code> for stdin), never guessed from one another.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">r.report</span></code> says what was replaced (by type and by detector), what was detected and kept (dates, postcodes and URLs, under the default policy) and which detectors ran, and ends with the caveat that this is pseudonymisation, not anonymisation.</p>
+<section id="what-it-finds">
+<h2>What it finds<a class="headerlink" href="#what-it-finds" title="Link to this heading">#</a></h2>
+<p>Danish: CPR numbers (the date part must be valid; the pre-2007 modulus-11 check only raises confidence, because numbers issued since October 2007 need not pass it), CVR numbers (modulus-11 and context), DK VAT numbers, phone numbers, bank account numbers (registreringsnummer and kontonummer), IBAN (mod-97), street addresses with floor and postcode, postcode and town, amounts (<code class="docutils literal notranslate"><span class="pre">12.500</span> <span class="pre">kr.</span></code>, <code class="docutils literal notranslate"><span class="pre">DKK</span> <span class="pre">12.500</span></code>, <code class="docutils literal notranslate"><span class="pre">36.000,-</span></code>), dates, court and journal numbers. English: addresses, phone numbers, amounts (<code class="docutils literal notranslate"><span class="pre">£4,250.00</span></code>, <code class="docutils literal notranslate"><span class="pre">$5,000</span></code>), dates. Both: e-mail, URLs, IBAN, credentials (API keys, tokens, private keys), organisation names by legal form (<code class="docutils literal notranslate"><span class="pre">ApS</span></code>, <code class="docutils literal notranslate"><span class="pre">A/S</span></code>, <code class="docutils literal notranslate"><span class="pre">Ltd</span></code>, <code class="docutils literal notranslate"><span class="pre">GmbH</span></code>), names after a title (<code class="docutils literal notranslate"><span class="pre">Hr.</span></code>, <code class="docutils literal notranslate"><span class="pre">advokat</span></code>, <code class="docutils literal notranslate"><span class="pre">Mr</span></code>, <code class="docutils literal notranslate"><span class="pre">Dr</span></code>), names from a bundled Danish and English first-name list, names you pass in (<code class="docutils literal notranslate"><span class="pre">names=</span></code>), and a low-confidence heuristic for capitalised sequences.</p>
+<p>Once a value has been replaced anywhere in a project, every later occurrence is replaced too, including a Danish genitive (<code class="docutils literal notranslate"><span class="pre">Rasmus</span> <span class="pre">Jensens</span></code> becomes <code class="docutils literal notranslate"><span class="pre">[PERSON_1]s</span></code>), ALL-CAPS headings, and a surname or first name alone when it identifies exactly one known person (<code class="docutils literal notranslate"><span class="pre">Jensen</span> <span class="pre">blev</span></code> becomes <code class="docutils literal notranslate"><span class="pre">[PERSON_1]</span> <span class="pre">blev</span></code>). An identifier inside something the policy keeps (a CPR number in a URL) is still replaced. Pseudonymising already pseudonymised text changes nothing.</p>
+<p>It does not find: names it has never seen and the heuristic misses, roles and rare facts that identify without an identifier, inflected compounds, OCR-damaged identifiers. The report’s <code class="docutils literal notranslate"><span class="pre">kept</span></code> list and the <code class="docutils literal notranslate"><span class="pre">check</span></code> command exist so a reader sees what stayed.</p>
+</section>
+<section id="choosing-what-is-sensitive">
+<h2>Choosing what is sensitive<a class="headerlink" href="#choosing-what-is-sensitive" title="Link to this heading">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">Policy</span></code> decides after detection, so the report can say what it saw and kept. <code class="docutils literal notranslate"><span class="pre">Policy.default()</span></code> replaces credentials, persons, CPR, e-mail, phone, addresses, IBAN, bank accounts, case numbers, CVR, organisations and amounts; <code class="docutils literal notranslate"><span class="pre">Policy.identifiers()</span></code> leaves amounts and organisations; <code class="docutils literal notranslate"><span class="pre">Policy.strict()</span></code> replaces everything detected, dates and postcodes included. <code class="docutils literal notranslate"><span class="pre">include</span></code>, <code class="docutils literal notranslate"><span class="pre">exclude</span></code>, per-type <code class="docutils literal notranslate"><span class="pre">min_score</span></code>, <code class="docutils literal notranslate"><span class="pre">allow</span></code> (never replace) and <code class="docutils literal notranslate"><span class="pre">deny</span></code> (always replace) lists refine any of them. The taxonomy behind the types, with tiers and the equivalent Presidio, Google DLP and HIPAA names, is <code class="docutils literal notranslate"><span class="pre">nyms.taxonomy.ENTITY_TYPES</span></code>.</p>
+</section>
+<section id="choosing-the-surrogates">
+<h2>Choosing the surrogates<a class="headerlink" href="#choosing-the-surrogates" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Strategy</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>When</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Counter()</span></code> (default)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[PERSON_1]</span></code>, <code class="docutils literal notranslate"><span class="pre">[CPR_2]</span></code></p></td>
+<td><p>the form LLMs alter least in the one published benchmark; numbered per project</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">KeyedWords(key)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Alder</span> <span class="pre">Brook</span></code>, <code class="docutils literal notranslate"><span class="pre">[CPR:mustard-suitcase]</span></code></p></td>
+<td><p>the same surrogate on any machine that has the key, no shared store needed; readable</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RandomWords()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Lunar</span> <span class="pre">Cobweb</span></code></p></td>
+<td><p>a classic tokenisation vault: random, readable, no key</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Aliases({...},</span> <span class="pre">fallback=...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">the</span> <span class="pre">landlord</span></code></p></td>
+<td><p>you choose the pseudonym for some values yourself</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">KeyedWords</span></code> is an HMAC-SHA-256 under the project key rendered as words from the EFF short wordlist (1,296 words, 10.3 bits each). The renderer stands alone as <code class="docutils literal notranslate"><span class="pre">nyms.readable(value,</span> <span class="pre">key=...)</span></code> and <code class="docutils literal notranslate"><span class="pre">nyms</span> <span class="pre">readable</span></code>. There is no unkeyed option: a plain hash of a CPR number is undone by enumerating the ten billion candidates.</p>
+<p>Re-identification is tolerant of what models do to bracketed tokens (case, spacing, a dropped bracket, a genitive after it); name-shaped surrogates and aliases are matched exactly, so ordinary prose is left alone. It never guesses: tokens it did not issue come back in <code class="docutils literal notranslate"><span class="pre">unmatched</span></code>.</p>
+</section>
+<section id="where-the-mapping-and-the-key-live">
+<h2>Where the mapping and the key live<a class="headerlink" href="#where-the-mapping-and-the-key-live" title="Link to this heading">#</a></h2>
+<p>The mapping store (surrogate, original, type) is the key to the text. By default it is a set of JSON files under <code class="docutils literal notranslate"><span class="pre">~/.local/share/nyms/&lt;project&gt;/mapping/</span></code>, and the project key is 32 random bytes in <code class="docutils literal notranslate"><span class="pre">~/.config/nyms/keys/&lt;project&gt;.key</span></code> (mode 0600), created on first use; <code class="docutils literal notranslate"><span class="pre">NYMS_KEY</span></code> in the environment overrides it, and <code class="docutils literal notranslate"><span class="pre">Pseudonymiser(...,</span> <span class="pre">key=...)</span></code> accepts any bytes. With <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;nyms[crypto]&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">encrypt=True</span></code> the records are Fernet-encrypted under the key before they hit disk; without it they are plaintext in your user directory, which is the trade-off of needing no dependency. Lose the store and <code class="docutils literal notranslate"><span class="pre">[PERSON_1]</span></code> cannot be reversed; lose the key and an encrypted store cannot be read. Back both up, apart from each other.</p>
+<p>Any <code class="docutils literal notranslate"><span class="pre">MutableMapping</span></code> works as the store (<code class="docutils literal notranslate"><span class="pre">store=</span></code>), so <a class="reference external" href="https://github.com/i2mint/dol">dol</a> backends (SQLite, S3) drop in, and <code class="docutils literal notranslate"><span class="pre">store={}</span></code> keeps a run in memory.</p>
+</section>
+<section id="for-ai-agents">
+<h2>For AI agents<a class="headerlink" href="#for-ai-agents" title="Link to this heading">#</a></h2>
+<!-- epythet:agentic-readme:start -->
+<p><code class="docutils literal notranslate"><span class="pre">nyms</span></code> ships a skill for coding agents, in <a class="reference external" href="https://agentskills.io">Agent Skills</a> format:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gh<span class="w"> </span>skill<span class="w"> </span>install<span class="w"> </span>thorwhalen/nyms<span class="w"> </span>nyms<span class="w"> </span>--agent<span class="w"> </span>claude-code<span class="w">     </span><span class="c1"># or copilot, cursor, codex, gemini</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Skill</p></th>
+<th class="head"><p>Use it to</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nyms</span></code></p></td>
+<td><p>pseudonymise documents before they reach a model, re-identify the answer, and check that nothing leaks</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The skill folder also ships inside the wheel: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-c</span> <span class="pre">&quot;import</span> <span class="pre">nyms,</span> <span class="pre">os;</span> <span class="pre">print(os.path.join(nyms.__path__[0],</span> <span class="pre">'data',</span> <span class="pre">'skills'))&quot;</span></code>.</p>
+<!-- epythet:agentic-readme:end -->
+</section>
+<section id="design">
+<h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
+<p>The research behind the design (terminology and regulation, detection libraries and methods, surrogates and key management, pipeline architecture) is in <a class="reference internal" href="#docs/research/"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">docs/research/</span></code></span></a>, with a <a class="reference internal" href="#docs/research/deidentification-synthesis.md"><span class="xref myst">synthesis</span></a>; the decisions are in <a class="reference internal" href="#docs/adr/"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">docs/adr/</span></code></span></a>. Six seams, each one keyword argument of <code class="docutils literal notranslate"><span class="pre">Pseudonymiser</span></code>: <code class="docutils literal notranslate"><span class="pre">detectors</span></code>, <code class="docutils literal notranslate"><span class="pre">post_detectors</span></code>, <code class="docutils literal notranslate"><span class="pre">policy</span></code>, <code class="docutils literal notranslate"><span class="pre">strategy</span></code>, <code class="docutils literal notranslate"><span class="pre">store</span></code>, <code class="docutils literal notranslate"><span class="pre">key</span></code>. The model-based second pass is the <code class="docutils literal notranslate"><span class="pre">post_detectors</span></code> seam: any callable <code class="docutils literal notranslate"><span class="pre">text</span> <span class="pre">-&gt;</span> <span class="pre">spans</span></code>, run on the already-pseudonymised text with the surrogates protected; none ships in v1.</p>
+<p>The EFF wordlist is CC BY 3.0 (see <code class="docutils literal notranslate"><span class="pre">nyms/data/wordlists/NOTICE.md</span></code>). Everything else is MIT.</p>
+<p class="epythet-aggregates">This documentation as a single file: <a href="nyms.md">nyms.md</a> (Markdown, for agents).</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-11-08 07:52 UTC from <a href="https://github.com/thorwhalen/nyms/commit/662a40aab35829359d43c04ee904c4deacb80406">662a40a</a> (main) · nyms 0.0.1 · <a href="about-this-build.html">about this build</a></p>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-it-finds">What it finds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-what-is-sensitive">Choosing what is sensitive</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-surrogates">Choosing the surrogates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-the-mapping-and-the-key-live">Where the mapping and the key live</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#for-ai-agents">For AI agents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/index.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

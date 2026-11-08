@@ -1,0 +1,14 @@
+nyms.data
+=========
+
+.. automodule:: nyms.data
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   names
+   wordlists

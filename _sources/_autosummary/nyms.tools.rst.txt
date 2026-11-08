@@ -1,0 +1,18 @@
+nyms.tools
+==========
+
+.. automodule:: nyms.tools
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      check
+      detect
+      mapping
+      policies
+      pseudonymise
+      readable
+      reidentify
+   

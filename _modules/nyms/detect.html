@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="alternate" type="text/markdown" href="detect.html.md">
+<link rel="describedby" href="../../llms.txt" type="text/markdown">
+    <title>nyms.detect &#8212; nyms</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_autodoc_typehints.css?v=057ac668" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/epythet.css?v=16d63cf0" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/nyms/detect';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.1" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">nyms</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../ai-agents.html">
+    For AI agents
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/thorwhalen/nyms" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../ai-agents.html">
+    For AI agents
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/thorwhalen/nyms" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">nyms.detect</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for nyms.detect</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Deterministic detectors: regular expressions, checksums and gazetteers, no model.</span>
+
+<span class="sd">This is the pre-AI pass. Each :class:`Detector` is a compiled pattern plus an optional</span>
+<span class="sd">validator (a checksum, a calendar check, a stop list) and optional context words that raise</span>
+<span class="sd">the score when they appear shortly before the match. Any callable ``text -&gt; Iterable[Span]``</span>
+<span class="sd">is a detector (:class:`DetectorLike`); :class:`Detector` is the regex-backed one this module</span>
+<span class="sd">ships. A set of them is run by :func:`detect_raw`; :func:`detect` also resolves overlaps.</span>
+
+<span class="sd">Design notes, with the research behind them (``docs/research/detection-libraries-and-methods.md``):</span>
+
+<span class="sd">- The Danish CPR modulus-11 check is **not a gate**: numbers issued since 1 October 2007 need</span>
+<span class="sd">  not pass it. A passing check raises the score; a failing one does not drop the match.</span>
+<span class="sd">- A bare eight-digit number is ambiguous between a Danish phone number and a CVR number. Both</span>
+<span class="sd">  detectors match it at a low score; the CVR checksum and context words ("CVR", "tlf.")</span>
+<span class="sd">  decide, and :func:`nyms.spans.resolve_overlaps` keeps the better one.</span>
+<span class="sd">- Recall over precision: a missed identifier leaks, a redundant replacement only costs</span>
+<span class="sd">  readability. The capitalised-sequence name heuristic therefore exists, at a low score, and</span>
+<span class="sd">  the policy threshold decides whether it acts.</span>
+<span class="sd">- Letters are the Latin letters of Unicode's Basic Latin, Latin-1 Supplement and Latin</span>
+<span class="sd">  Extended-A and B blocks, upper and lower case as Unicode classifies them, so Danish, Polish,</span>
+<span class="sd">  Turkish and Spanish names are all names. Text is NFC-normalised by the facade before</span>
+<span class="sd">  detection, so a decomposed ``ø`` is the same letter as a composed one.</span>
+<span class="sd">- Credential patterns follow the design of ``openloops.egress`` (vendor prefixes first, one</span>
+<span class="sd">  heuristic rule last).</span>
+
+<span class="sd">&gt;&gt;&gt; spans = detect("Ring til Rasmus Jensen på 12 34 56 78, CPR 010190-1234.")</span>
+<span class="sd">&gt;&gt;&gt; [(s.entity_type, s.text) for s in spans]</span>
+<span class="sd">[('PERSON', 'Rasmus Jensen'), ('PHONE', '12 34 56 78'), ('CPR', '010190-1234')]</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">unicodedata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">resources</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nyms.spans</span><span class="w"> </span><span class="kn">import</span> <span class="n">Span</span><span class="p">,</span> <span class="n">resolve_overlaps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nyms.taxonomy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SURROGATE_TYPE</span>
+
+<span class="n">Validator</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">],</span> <span class="s2">"float | bool | None"</span><span class="p">]</span>
+
+<span class="n">CONTEXT_WINDOW</span> <span class="o">=</span> <span class="mi">40</span>  <span class="c1"># characters before the match in which a context word counts</span>
+<span class="n">CONTEXT_BOOST</span> <span class="o">=</span> <span class="mf">0.3</span>
+
+
+<div class="viewcode-block" id="DetectorLike">
+<a class="viewcode-back" href="../../_autosummary/nyms.html#nyms.DetectorLike">[docs]</a>
+<span class="nd">@runtime_checkable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DetectorLike</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Anything that turns text into spans. ``name`` and ``entity_type`` are optional."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Span</span><span class="p">]:</span> <span class="o">...</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">detector_name</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The name a detector reports under: its ``name`` attribute, else its function name."""</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">detector_entity_type</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The single entity type a detector emits, when it declares one (regex detectors do)."""</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">"entity_type"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Detector">
+<a class="viewcode-back" href="../../_autosummary/nyms.html#nyms.Detector">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Detector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A regex detector with an optional validator and context words.</span>
+
+<span class="sd">    ``validate(match)`` may return ``False`` (drop), ``True``/``None`` (keep the base</span>
+<span class="sd">    score) or a float (use it as the score). ``group`` picks the capture group that is</span>
+<span class="sd">    the span (the whole match by default). ``value_of(match)`` may name the canonical value</span>
+<span class="sd">    the span stands for when it differs from the matched text.</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">entity_type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">pattern</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span>
+    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">validate</span><span class="p">:</span> <span class="n">Validator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">context</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">)</span>
+    <span class="n">value_of</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Span</span><span class="p">]:</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">_context_re</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">score</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+                    <span class="n">score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">span</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="n">end</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ctx</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span> <span class="o">-</span> <span class="n">CONTEXT_WINDOW</span><span class="p">)</span> <span class="p">:</span> <span class="n">start</span><span class="p">]):</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">score</span> <span class="o">+</span> <span class="n">CONTEXT_BOOST</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_of</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_of</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">yield</span> <span class="n">Span</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span><span class="p">,</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="nb">round</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_context_re</span><span class="p">(</span><span class="n">words</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?i)(?&lt;![\w])(?:"</span> <span class="o">+</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">")"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">normalise_text</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""NFC normalisation and CRLF to LF: the form every detector sees.</span>
+
+<span class="sd">    &gt;&gt;&gt; normalise_text('o\\u0308') == '\\u00f6'</span>
+<span class="sd">    True</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">"NFC"</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_raw</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">detectors</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DetectorLike</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Span</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Run *detectors* (default: :func:`default_detectors`); every span, overlaps included."""</span>
+    <span class="n">detectors</span> <span class="o">=</span> <span class="n">default_detectors</span><span class="p">()</span> <span class="k">if</span> <span class="n">detectors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">detectors</span>
+    <span class="n">found</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Span</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
+        <span class="n">found</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">found</span>
+
+
+<div class="viewcode-block" id="detect">
+<a class="viewcode-back" href="../../_autosummary/nyms.html#nyms.detect">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detect</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">detectors</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DetectorLike</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Span</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Run *detectors* (default: :func:`default_detectors`) and resolve overlaps."""</span>
+    <span class="k">return</span> <span class="n">resolve_overlaps</span><span class="p">(</span><span class="n">detect_raw</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">detectors</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------------------------- validators</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_digits</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\D"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cpr_mod11_ok</span><span class="p">(</span><span class="n">cpr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The historical CPR modulus-11 check. Not required for numbers issued after 2007.</span>
+
+<span class="sd">    &gt;&gt;&gt; cpr_mod11_ok('211062-5629')</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; cpr_mod11_ok('010190-1234')</span>
+<span class="sd">    False</span>
+<span class="sd">    """</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">_digits</span><span class="p">(</span><span class="n">cpr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span> <span class="o">%</span> <span class="mi">11</span> <span class="o">==</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cpr_date_ok</span><span class="p">(</span><span class="n">cpr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether the first six digits are a plausible DDMMYY date.</span>
+
+<span class="sd">    &gt;&gt;&gt; cpr_date_ok('311299-0001'), cpr_date_ok('321299-0001'), cpr_date_ok('011399-0001')</span>
+<span class="sd">    (True, False, False)</span>
+<span class="sd">    """</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">_digits</span><span class="p">(</span><span class="n">cpr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">day</span><span class="p">,</span> <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">day</span> <span class="o">&lt;=</span> <span class="mi">31</span> <span class="ow">and</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">12</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cvr_ok</span><span class="p">(</span><span class="n">cvr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The CVR modulus-11 check (weights 2 7 6 5 4 3 2 1).</span>
+
+<span class="sd">    &gt;&gt;&gt; cvr_ok('10150817'), cvr_ok('12345678')</span>
+<span class="sd">    (True, False)</span>
+<span class="sd">    """</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">_digits</span><span class="p">(</span><span class="n">cvr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">8</span> <span class="ow">or</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"0"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span> <span class="o">%</span> <span class="mi">11</span> <span class="o">==</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">iban_ok</span><span class="p">(</span><span class="n">iban</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""ISO 13616 mod-97 check.</span>
+
+<span class="sd">    &gt;&gt;&gt; iban_ok('DK50 0040 0440 1162 43'), iban_ok('DK50 0040 0440 1162 44')</span>
+<span class="sd">    (True, False)</span>
+<span class="sd">    """</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\s"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">iban</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">15</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">34</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">s</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">rearranged</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="o">+</span> <span class="n">s</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">numeric</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">36</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rearranged</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">numeric</span><span class="p">)</span> <span class="o">%</span> <span class="mi">97</span> <span class="o">==</span> <span class="mi">1</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cpr_validate</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cpr_date_ok</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="k">if</span> <span class="s2">"-"</span> <span class="ow">in</span> <span class="n">text</span> <span class="k">else</span> <span class="mf">0.7</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">score</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.1</span> <span class="k">if</span> <span class="n">cpr_mod11_ok</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cvr_validate</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">):</span>
+    <span class="c1"># One eight-digit number in eleven passes the checksum by chance: below the default</span>
+    <span class="c1"># threshold on its own, above it with a context word ("CVR", "SE-nr") or the DK prefix.</span>
+    <span class="k">return</span> <span class="mf">0.4</span> <span class="k">if</span> <span class="n">cvr_ok</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">else</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_dk_phone_validate</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"+"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"00"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    <span class="k">return</span> <span class="mf">0.7</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[\s.-]"</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.4</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_iban_validate</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">iban_ok</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">else</span> <span class="kc">False</span>
+
+
+<span class="c1"># --------------------------------------------------------------------------- letter classes</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_latin_letters</span><span class="p">(</span><span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Latin letters of one Unicode category (``Lu`` or ``Ll``) from the blocks up to Extended-B."""</span>
+    <span class="n">ranges</span> <span class="o">=</span> <span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x5B</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mh">0x61</span><span class="p">,</span> <span class="mh">0x7B</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mh">0xC0</span><span class="p">,</span> <span class="mh">0x250</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranges</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">r</span> <span class="k">if</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">category</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="o">==</span> <span class="n">category</span><span class="p">)</span>
+
+
+<span class="n">_UC</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">_latin_letters</span><span class="p">(</span><span class="s2">"Lu"</span><span class="p">))</span>
+<span class="n">_LC</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">_latin_letters</span><span class="p">(</span><span class="s2">"Ll"</span><span class="p">))</span>
+
+<span class="c1">#: A capitalised word (``Jensen``, ``Anne-Marie``) or an all-capitals one (``JENSEN``), as in</span>
+<span class="c1">#: headings; a single capital letter is not a word (so ``N`` in ``København N`` is a suffix).</span>
+<span class="n">_CAP_WORD</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"(?:[</span><span class="si">{</span><span class="n">_UC</span><span class="si">}</span><span class="s2">][</span><span class="si">{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">]+(?:-[</span><span class="si">{</span><span class="n">_UC</span><span class="si">}</span><span class="s2">][</span><span class="si">{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">]+)?|[</span><span class="si">{</span><span class="n">_UC</span><span class="si">}</span><span class="s2">]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">(?:-[</span><span class="si">{</span><span class="n">_UC</span><span class="si">}</span><span class="s2">]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">)?)"</span>
+<span class="n">_INITIALS</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"(?:[</span><span class="si">{</span><span class="n">_UC</span><span class="si">}</span><span class="s2">]\.\s?)</span><span class="se">{{</span><span class="s2">1,3</span><span class="se">}}</span><span class="s2">"</span>
+<span class="n">_PARTICLE</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"(?:von|van|de|der|den|af|la|le|du|di|da)"</span>
+<span class="c1"># Each step of a name's tail is a capitalised word or an initial, optionally preceded by a</span>
+<span class="c1"># particle ("von", "af"); a particle never ends a name ("Mette Holm af 2. september").</span>
+<span class="n">_NAME_TAIL</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"(?:\s(?:</span><span class="si">{</span><span class="n">_PARTICLE</span><span class="si">}</span><span class="s2">\s)?(?:</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">|[</span><span class="si">{</span><span class="n">_UC</span><span class="si">}</span><span class="s2">]\.))</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">"</span>
+
+<span class="c1"># --------------------------------------------------------------------------- patterns</span>
+
+<span class="n">_DK_STREET_SUFFIX</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sa">r</span><span class="s2">"(?:vej|vejen|gade|gaden|allé|alle|plads|boulevard|stræde|vænge|vænget|vang|vangen|parken|park|haven|have|"</span>
+    <span class="sa">r</span><span class="s2">"torv|torvet|bakke|bakken|høj|højen|holm|holmen|stien|sti|marken|mark|dalen|dal|lund|lunden|gården|gård|"</span>
+    <span class="sa">r</span><span class="s2">"kær|kæret|skoven|skov|ager|ageren|toften|toft|engen|eng|bro|broen|strand|stranden|kvarter|kvarteret|"</span>
+    <span class="sa">r</span><span class="s2">"centret|center|krogen|krog|hegnet|hegn|gyde|gyden|led|leddet|husene|huse)"</span>
+<span class="p">)</span>
+<span class="n">_DK_STREET</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">(?:\s</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">"</span>
+<span class="c1"># A floor is "st.", "kl." or "3." (the period is mandatory, or ", 16" of a postcode would be a floor).</span>
+<span class="n">_DK_FLOOR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"(?:,?\s(?:st|kl|\d{1,2})\.(?:\s?(?:th|tv|mf|sal)\.?)?)?"</span>
+<span class="c1"># Danish towns may end in a compass letter: "København N", "København SV".</span>
+<span class="n">_DK_POSTCODE_CITY</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"\d</span><span class="se">{{</span><span class="s2">4</span><span class="se">}}</span><span class="s2">\s</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">(?:\s</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,2</span><span class="se">}}</span><span class="s2">(?:\s[NSØVK]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">(?![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">]))?"</span>
+<span class="n">_DK_ADDRESS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">rf</span><span class="s2">"(?&lt;![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])(?P&lt;street&gt;</span><span class="si">{</span><span class="n">_DK_STREET</span><span class="si">}</span><span class="s2">)\s(?P&lt;number&gt;\d</span><span class="se">{{</span><span class="s2">1,4</span><span class="se">}}</span><span class="s2">[A-Za-z]?)</span><span class="si">{</span><span class="n">_DK_FLOOR</span><span class="si">}</span><span class="s2">"</span>
+    <span class="sa">rf</span><span class="s2">"(?P&lt;post&gt;,?\s</span><span class="si">{</span><span class="n">_DK_POSTCODE_CITY</span><span class="si">}</span><span class="s2">)?(?![</span><span class="si">{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])"</span>
+<span class="p">)</span>
+<span class="n">_EN_STREET_SUFFIX</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sa">r</span><span class="s2">"(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Lane|Ln\.?|Drive|Dr\.?|Boulevard|Blvd\.?|Court|Ct\.?|"</span>
+    <span class="sa">r</span><span class="s2">"Place|Pl\.?|Way|Square|Sq\.?|Terrace|Close|Crescent|Gardens|Row)"</span>
+<span class="p">)</span>
+<span class="n">_EN_ADDRESS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">rf</span><span class="s2">"\b\d</span><span class="se">{{</span><span class="s2">1,5</span><span class="se">}}</span><span class="s2">[A-Za-z]?\s(?:[A-Z][a-z]+\s)</span><span class="se">{{</span><span class="s2">1,3</span><span class="se">}}</span><span class="si">{</span><span class="n">_EN_STREET_SUFFIX</span><span class="si">}</span><span class="s2">\b"</span>
+    <span class="sa">r</span><span class="s2">"(?:,\s[A-Z][a-z]+(?:\s[A-Z][a-z]+)*)?(?:,?\s(?:[A-Z]</span><span class="si">{2}</span><span class="s2">\s\d</span><span class="si">{5}</span><span class="s2">|[A-Z]{1,2}\d{1,2}[A-Z]?\s\d[A-Z]</span><span class="si">{2}</span><span class="s2">))?"</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_dk_address_validate</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">):</span>
+    <span class="n">street</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"street"</span><span class="p">)</span>
+    <span class="n">has_suffix</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">_DK_STREET_SUFFIX</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">"$"</span><span class="p">,</span> <span class="n">street</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"post"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">0.95</span>
+    <span class="k">return</span> <span class="mf">0.8</span> <span class="k">if</span> <span class="n">has_suffix</span> <span class="k">else</span> <span class="kc">False</span>
+
+
+<span class="n">_CUR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"(?:DKK|kr\.?|EUR|€|USD|\$|£|GBP|SEK|NOK|CHF)"</span>
+<span class="c1"># As a suffix, "kr." keeps its period only when the sentence goes on in lower case; before an</span>
+<span class="c1"># upper-case word or the end of the text the period is the sentence's, not the unit's.</span>
+<span class="n">_CUR_SUFFIX</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">"(?:DKK|kr\.(?!\s*(?:[</span><span class="si">{</span><span class="n">_UC</span><span class="si">}</span><span class="s2">]|$))|kr|EUR|€|USD|\$|£|GBP|SEK|NOK|CHF)"</span>
+<span class="n">_NUM</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"(?:\d{1,3}(?:[.,\s]\d</span><span class="si">{3}</span><span class="s2">)+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?)"</span>
+<span class="n">_SCALE</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"(?:\s?(?:mio|mia|mill|millioner|million|billion|tusind|thousand|k)\.?(?=[\s,;)]|$))?"</span>
+<span class="n">_AMOUNT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">rf</span><span class="s2">"(?&lt;![\w.,])</span><span class="si">{</span><span class="n">_CUR</span><span class="si">}</span><span class="s2">\s?</span><span class="si">{</span><span class="n">_NUM</span><span class="si">}{</span><span class="n">_SCALE</span><span class="si">}</span><span class="s2">(?![\d])|(?&lt;![\w.,])</span><span class="si">{</span><span class="n">_NUM</span><span class="si">}{</span><span class="n">_SCALE</span><span class="si">}</span><span class="s2">\s?(?:</span><span class="si">{</span><span class="n">_CUR_SUFFIX</span><span class="si">}</span><span class="s2">|,-)(?![</span><span class="si">{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])"</span>
+<span class="p">)</span>
+
+<span class="n">_MONTHS_DA</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"(?:januar|februar|marts|april|maj|juni|juli|august|september|oktober|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|okt|nov|dec)\.?"</span>
+<span class="n">_MONTHS_EN</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sa">r</span><span class="s2">"(?:January|February|March|April|May|June|July|August|September|October|November|December|"</span>
+    <span class="sa">r</span><span class="s2">"Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?"</span>
+<span class="p">)</span>
+<span class="n">_DATE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">"(?&lt;!\d)(?:\d</span><span class="si">{4}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">|\d{1,2}[./-]\d{1,2}[./-](?:\d</span><span class="si">{4}</span><span class="s2">|\d</span><span class="si">{2}</span><span class="s2">))(?!\d)"</span>
+    <span class="sa">rf</span><span class="s2">"|(?&lt;![\w])(?:den\s)?\d</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">\.?\s</span><span class="si">{</span><span class="n">_MONTHS_DA</span><span class="si">}</span><span class="s2">(?:\s\d</span><span class="se">{{</span><span class="s2">4</span><span class="se">}}</span><span class="s2">)?(?![</span><span class="si">{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])"</span>
+    <span class="sa">rf</span><span class="s2">"|(?&lt;![\w])\d</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">(?:st|nd|rd|th)?\s(?:of\s)?</span><span class="si">{</span><span class="n">_MONTHS_EN</span><span class="si">}</span><span class="s2">(?:,?\s\d</span><span class="se">{{</span><span class="s2">4</span><span class="se">}}</span><span class="s2">)?\b"</span>
+    <span class="sa">rf</span><span class="s2">"|(?&lt;![\w])</span><span class="si">{</span><span class="n">_MONTHS_EN</span><span class="si">}</span><span class="s2">\s\d</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">(?:st|nd|rd|th)?(?:,?\s\d</span><span class="se">{{</span><span class="s2">4</span><span class="se">}}</span><span class="s2">)?\b"</span>
+<span class="p">)</span>
+
+<span class="n">_CASE_ID_CODE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\b(?:BS|SS|B|S|K|V)-\d{1,6}/\d</span><span class="si">{4}</span><span class="s2">(?:-[A-Z]</span><span class="si">{3}</span><span class="s2">)?\b"</span><span class="p">)</span>
+<span class="n">_CASE_ID_LABELLED</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">"(?i:(?:sagsnr|sags\s?nr|j\.?\s?nr|journalnr|sag\s?nr|case\s(?:no|number)|ref\.?\s?nr)\.?\s*:?\s*)(?P&lt;id&gt;[A-Z0-9][\w\-/]{3,}(?&lt;![.,;]))"</span>
+<span class="p">)</span>
+
+<span class="n">_CREDENTIAL_PATTERNS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">"aws_access_key_id"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"(?&lt;![A-Z0-9])(?:AKIA|ASIA)[0-9A-Z]</span><span class="si">{16}</span><span class="s2">(?![A-Z0-9])"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"github_token"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\bgh[pousr]_[A-Za-z0-9]{36,}\b"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"github_pat"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\bgithub_pat_[A-Za-z0-9_]{22,}\b"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"anthropic_api_key"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\bsk-ant-[A-Za-z0-9_\-]{20,}\b"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"openai_api_key"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\bsk-(?!ant-)[A-Za-z0-9_\-]{20,}\b"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"stripe_key"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\b[srp]k_(?:live|test)_[A-Za-z0-9]{16,}\b"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"slack_token"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\bxox[baprs]-[A-Za-z0-9\-]{10,}\b"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"google_api_key"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\bAIza[0-9A-Za-z_\-]</span><span class="si">{35}</span><span class="s2">\b"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"json_web_token"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\beyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]+"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"private_key_block"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----"</span><span class="p">),</span>
+    <span class="p">(</span>
+        <span class="s2">"secret_assignment"</span><span class="p">,</span>
+        <span class="sa">r</span><span class="s2">"(?i)(?&lt;![A-Za-z0-9])(?:[A-Za-z0-9]+[_-])*(?:api[_-]?key|secret[_-]?\w*|passwd|password|access[_-]?token|auth[_-]?token|token|credential\w*)\b\s*[:=]\s*['</span><span class="se">\"</span><span class="s2">]?((?=[^'</span><span class="se">\"</span><span class="s2">\s]*[A-Za-z])(?=[^'</span><span class="se">\"</span><span class="s2">\s]*\d)[A-Za-z0-9+/=_\-.]{16,})['</span><span class="se">\"</span><span class="s2">]?"</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">_TITLES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sa">r</span><span class="s2">"(?:\b(?:Hr|Fru|Frk|Mr|Mrs|Ms|Mx|Dr|Prof|Adv|Sir)\.?|\b(?:advokat|Advokat|direktør|Direktør|sagsøger|Sagsøger|"</span>
+    <span class="sa">r</span><span class="s2">"sagsøgte|Sagsøgte|klager|Klager|indklagede|Indklagede|lejer|Lejer|udlejer|Udlejer|vidne|Vidne|dommer|Dommer))"</span>
+<span class="p">)</span>
+<span class="n">_TITLE_NAME</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">"</span><span class="si">{</span><span class="n">_TITLES</span><span class="si">}</span><span class="s2">\s+(?P&lt;name&gt;(?:</span><span class="si">{</span><span class="n">_INITIALS</span><span class="si">}</span><span class="s2">)?</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}{</span><span class="n">_NAME_TAIL</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+
+<span class="n">_HEURISTIC_NAME</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">rf</span><span class="s2">"(?&lt;![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">\-])(?P&lt;name&gt;(?:</span><span class="si">{</span><span class="n">_INITIALS</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">)(?:\s(?:</span><span class="si">{</span><span class="n">_PARTICLE</span><span class="si">}</span><span class="s2">\s)?</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">1,3</span><span class="se">}}</span><span class="s2">)(?![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])"</span>
+<span class="p">)</span>
+
+<span class="n">_ORG_SUFFIX</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"(?:ApS|A/S|I/S|IVS|K/S|P/S|Ltd\.?|Limited|Inc\.?|LLC|LLP|PLC|GmbH|AG|SA|S\.A\.|BV|B\.V\.|AB|AS|ASA|Oy|Oyj|Corp\.?|Co\.|Holding|Fonden|Foundation)"</span>
+<span class="n">_ORG_NAME</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">rf</span><span class="s2">"(?&lt;![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">\-])(?P&lt;name&gt;</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">(?:\s(?:(?:&amp;|og|and|</span><span class="si">{</span><span class="n">_PARTICLE</span><span class="si">}</span><span class="s2">)\s)?</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,4</span><span class="se">}}</span><span class="s2">\s</span><span class="si">{</span><span class="n">_ORG_SUFFIX</span><span class="si">}</span><span class="s2">)(?![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])"</span>
+<span class="p">)</span>
+
+<span class="c1">#: Capitalised words that start or end a sequence which is not a person's name.</span>
+<span class="n">NAME_STOPWORDS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="s2">"Den Det De Der Her Hvis Når Som Men Og Eller For Med Til Fra Ved Om På Af I Jeg Du Vi Han Hun Dette Denne Disse "</span>
+        <span class="s2">"Kære Hilsen Venlig Mvh Bilag Punkt Side Dato Emne Vedr Vedrørende Att Retten Byretten Landsretten Højesteret "</span>
+        <span class="s2">"Østre Vestre Sø Danmark Dansk Danske Danmarks København Københavns Aarhus Odense Aalborg Europa Europæiske Ministeriet "</span>
+        <span class="s2">"Styrelsen Kommune Kommunen Region Regionen Staten Folketinget Regeringen Domstolen Domstolene Nævnet Ankestyrelsen "</span>
+        <span class="s2">"The This That These Those In On At By For From With To Of And Or But If When Dear Regards Sincerely Best Kind Yours "</span>
+        <span class="s2">"Subject Re Date Page Attachment Section Article Court High Supreme District Appeal Appeals European Union United Kingdom "</span>
+        <span class="s2">"States America Denmark Danish English Monday Tuesday Wednesday Thursday Friday Saturday Sunday January February March "</span>
+        <span class="s2">"April June July August September October November December Mandag Tirsdag Onsdag Torsdag Fredag Lørdag Søndag "</span>
+        <span class="s2">"Januar Februar Marts Maj Juni Juli Oktober Jan Feb Mar Apr Jun Jul Aug Sep Sept Okt Oct Nov Dec "</span>
+        <span class="s2">"CPR CVR IBAN BIC SWIFT DKK EUR USD GBP SEK NOK NR Nr ApS IVS LLC Ltd PLC GmbH Google Microsoft Apple Claude Anthropic OpenAI ChatGPT"</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_heuristic_name_validate</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">):</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span> <span class="ow">in</span> <span class="n">NAME_STOPWORDS</span> <span class="ow">or</span> <span class="n">words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="ow">in</span> <span class="n">NAME_STOPWORDS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="ow">in</span> <span class="n">NAME_STOPWORDS</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">before</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">string</span><span class="p">[:</span> <span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+    <span class="n">sentence_start</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">before</span> <span class="ow">or</span> <span class="n">before</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="s2">".!?:</span><span class="se">\n</span><span class="s2">"</span>
+    <span class="k">return</span> <span class="mf">0.4</span> <span class="k">if</span> <span class="n">sentence_start</span> <span class="k">else</span> <span class="mf">0.5</span>
+
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bundled_first_names</span><span class="p">(</span><span class="o">*</span><span class="n">languages</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The bundled first-name gazetteers (``da``, ``en``), casefolded.</span>
+
+<span class="sd">    &gt;&gt;&gt; 'rasmus' in bundled_first_names('da')</span>
+<span class="sd">    True</span>
+<span class="sd">    """</span>
+    <span class="n">languages</span> <span class="o">=</span> <span class="n">languages</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">"da"</span><span class="p">,</span> <span class="s2">"en"</span><span class="p">)</span>
+    <span class="n">names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="n">languages</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="s2">"nyms.data.names"</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">"first_names_</span><span class="si">{</span><span class="n">lang</span><span class="si">}</span><span class="s2">.txt"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="gazetteer_detector">
+<a class="viewcode-back" href="../../_autosummary/nyms.html#nyms.gazetteer_detector">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gazetteer_detector</span><span class="p">(</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"gazetteer"</span><span class="p">,</span>
+    <span class="n">entity_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"PERSON"</span><span class="p">,</span>
+    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">surname_tail</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">value_of_name</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">single_word_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.85</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Detector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A detector for a list of known names (full names or first names), case-insensitive.</span>
+
+<span class="sd">    A first name followed by capitalised words extends to the full name when *surname_tail*</span>
+<span class="sd">    is true. A genitive ``s`` on the last word stays in the span; the mapping store decides</span>
+<span class="sd">    whether it is a genitive of a known value. *value_of_name* may map the matched text to the</span>
+<span class="sd">    canonical value it stands for (a surname to the full name).</span>
+
+<span class="sd">    &gt;&gt;&gt; d = gazetteer_detector(['Rasmus'])</span>
+<span class="sd">    &gt;&gt;&gt; [s.text for s in d('Rasmus Jensens bil, og Rasmus selv.')]</span>
+<span class="sd">    ['Rasmus Jensens', 'Rasmus']</span>
+<span class="sd">    """</span>
+    <span class="n">alts</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()},</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?!x)x"</span><span class="p">),</span> <span class="n">score</span><span class="p">)</span>
+    <span class="n">alt</span> <span class="o">=</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">alts</span><span class="p">)</span>
+    <span class="n">tail</span> <span class="o">=</span> <span class="n">_NAME_TAIL</span> <span class="k">if</span> <span class="n">surname_tail</span> <span class="k">else</span> <span class="s2">""</span>
+    <span class="c1"># The list is matched case-insensitively (headings are upper case) but the head must start</span>
+    <span class="c1"># with a capital: "jan" in "1. jan. 2024" is a month, "Jan" is a name. A genitive "s" after</span>
+    <span class="c1"># the name is matched but left outside the span.</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">"(?&lt;![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])(?P&lt;name&gt;(?i:</span><span class="si">{</span><span class="n">alt</span><span class="si">}</span><span class="s2">)(?:-</span><span class="si">{</span><span class="n">_CAP_WORD</span><span class="si">}</span><span class="s2">)?</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">)(?:(?:'s|’s|s)(?![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])|(?![</span><span class="si">{</span><span class="n">_UC</span><span class="si">}{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">]))"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">score</span> <span class="k">if</span> <span class="s2">" "</span> <span class="ow">in</span> <span class="n">name</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">single_word_score</span><span class="p">)</span>
+
+    <span class="n">value_of</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">value_of_name</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)))</span> <span class="k">if</span> <span class="n">value_of_name</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">validate</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="n">value_of</span><span class="o">=</span><span class="n">value_of</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="default_detectors">
+<a class="viewcode-back" href="../../_autosummary/nyms.html#nyms.default_detectors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_detectors</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">languages</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"da"</span><span class="p">,</span> <span class="s2">"en"</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Detector</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The deterministic detector set. *names* are the parties you already know.</span>
+
+<span class="sd">    Order does not matter for the result (overlaps are resolved afterwards), only for the</span>
+<span class="sd">    report's grouping.</span>
+<span class="sd">    """</span>
+    <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"cpr"</span><span class="p">,</span> <span class="s2">"CPR"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![\d])\d</span><span class="si">{6}</span><span class="s2">-?\d</span><span class="si">{4}</span><span class="s2">(?![\d])"</span><span class="p">),</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">_cpr_validate</span><span class="p">,</span>
+                 <span class="n">context</span><span class="o">=</span><span class="p">(</span><span class="s2">"cpr"</span><span class="p">,</span> <span class="s2">"cpr-nr"</span><span class="p">,</span> <span class="s2">"cpr-nummer"</span><span class="p">,</span> <span class="s2">"personnummer"</span><span class="p">,</span> <span class="s2">"person nr"</span><span class="p">,</span> <span class="s2">"fødselsnummer"</span><span class="p">)),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"cvr"</span><span class="p">,</span> <span class="s2">"CVR"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![\w])\d</span><span class="si">{8}</span><span class="s2">(?![\d])"</span><span class="p">),</span> <span class="mf">0.4</span><span class="p">,</span> <span class="n">_cvr_validate</span><span class="p">,</span>
+                 <span class="n">context</span><span class="o">=</span><span class="p">(</span><span class="s2">"cvr"</span><span class="p">,</span> <span class="s2">"cvr-nr"</span><span class="p">,</span> <span class="s2">"cvr-nummer"</span><span class="p">,</span> <span class="s2">"se-nr"</span><span class="p">,</span> <span class="s2">"se-nummer"</span><span class="p">,</span> <span class="s2">"vat"</span><span class="p">,</span> <span class="s2">"moms"</span><span class="p">)),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"dk_vat"</span><span class="p">,</span> <span class="s2">"CVR"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\bDK\s?\d</span><span class="si">{8}</span><span class="s2">\b"</span><span class="p">),</span> <span class="mf">0.95</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"EMAIL"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"dk_phone"</span><span class="p">,</span> <span class="s2">"PHONE"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![\d+])(?:\+45[\s.-]?|0045[\s.-]?)?(?:\d</span><span class="si">{2}</span><span class="s2">[\s.-]?)</span><span class="si">{3}</span><span class="s2">\d</span><span class="si">{2}</span><span class="s2">(?![\d])"</span><span class="p">),</span> <span class="mf">0.7</span><span class="p">,</span>
+                 <span class="n">_dk_phone_validate</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">(</span><span class="s2">"tlf"</span><span class="p">,</span> <span class="s2">"telefon"</span><span class="p">,</span> <span class="s2">"mobil"</span><span class="p">,</span> <span class="s2">"mob"</span><span class="p">,</span> <span class="s2">"phone"</span><span class="p">,</span> <span class="s2">"tel"</span><span class="p">,</span> <span class="s2">"ring"</span><span class="p">)),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"intl_phone"</span><span class="p">,</span> <span class="s2">"PHONE"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![\d])\+(?!45)\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,4}(?![\d])"</span><span class="p">),</span> <span class="mf">0.9</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"iban"</span><span class="p">,</span> <span class="s2">"IBAN"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\b[A-Z]</span><span class="si">{2}</span><span class="s2">\d</span><span class="si">{2}</span><span class="s2">(?:\s?[A-Z0-9]</span><span class="si">{4}</span><span class="s2">){2,7}(?:\s?[A-Z0-9]{1,4})?\b"</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">_iban_validate</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"dk_bank_account"</span><span class="p">,</span> <span class="s2">"BANK_ACCOUNT"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![\d])\d</span><span class="si">{4}</span><span class="s2">(?:[\s-]|\s?(?i:konto(?:nr|nummer)?\.?)\s?)\d{6,10}(?![\d])"</span><span class="p">),</span> <span class="mf">0.6</span><span class="p">,</span>
+                 <span class="n">context</span><span class="o">=</span><span class="p">(</span><span class="s2">"konto"</span><span class="p">,</span> <span class="s2">"kontonr"</span><span class="p">,</span> <span class="s2">"kontonummer"</span><span class="p">,</span> <span class="s2">"reg"</span><span class="p">,</span> <span class="s2">"reg.nr"</span><span class="p">,</span> <span class="s2">"registreringsnummer"</span><span class="p">,</span> <span class="s2">"account"</span><span class="p">,</span> <span class="s2">"bank"</span><span class="p">)),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"dk_address"</span><span class="p">,</span> <span class="s2">"ADDRESS"</span><span class="p">,</span> <span class="n">_DK_ADDRESS</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">_dk_address_validate</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"en_address"</span><span class="p">,</span> <span class="s2">"ADDRESS"</span><span class="p">,</span> <span class="n">_EN_ADDRESS</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"dk_postcode_city"</span><span class="p">,</span> <span class="s2">"POSTCODE_CITY"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">"(?&lt;![\d])</span><span class="si">{</span><span class="n">_DK_POSTCODE_CITY</span><span class="si">}</span><span class="s2">(?![</span><span class="si">{</span><span class="n">_LC</span><span class="si">}</span><span class="s2">])"</span><span class="p">),</span> <span class="mf">0.6</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"amount"</span><span class="p">,</span> <span class="s2">"AMOUNT"</span><span class="p">,</span> <span class="n">_AMOUNT</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"date"</span><span class="p">,</span> <span class="s2">"DATE"</span><span class="p">,</span> <span class="n">_DATE</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"case_id"</span><span class="p">,</span> <span class="s2">"CASE_ID"</span><span class="p">,</span> <span class="n">_CASE_ID_CODE</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"case_id_labelled"</span><span class="p">,</span> <span class="s2">"CASE_ID"</span><span class="p">,</span> <span class="n">_CASE_ID_LABELLED</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"url"</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\bhttps?://[^\s&lt;&gt;</span><span class="se">\"</span><span class="s2">')\]]+|\bwww\.[^\s&lt;&gt;</span><span class="se">\"</span><span class="s2">')\]]+"</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"org_name"</span><span class="p">,</span> <span class="s2">"ORG"</span><span class="p">,</span> <span class="n">_ORG_NAME</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"title_name"</span><span class="p">,</span> <span class="s2">"PERSON"</span><span class="p">,</span> <span class="n">_TITLE_NAME</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="s2">"heuristic_name"</span><span class="p">,</span> <span class="s2">"PERSON"</span><span class="p">,</span> <span class="n">_HEURISTIC_NAME</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">_heuristic_name_validate</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">detectors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="n">Detector</span><span class="p">(</span><span class="sa">f</span><span class="s2">"credential:</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"CREDENTIAL"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="s2">"secret_assignment"</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">_CREDENTIAL_PATTERNS</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">languages</span><span class="p">:</span>
+        <span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gazetteer_detector</span><span class="p">(</span><span class="n">bundled_first_names</span><span class="p">(</span><span class="o">*</span><span class="n">languages</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"first_names"</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.9</span><span class="p">))</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gazetteer_detector</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"known_names"</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">1.0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">detectors</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">name_components</span><span class="p">(</span><span class="n">full_names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""``{component: full name}`` for the tokens that identify exactly one of *full_names*.</span>
+
+<span class="sd">    A surname or first name alone stands for the person when no other known name shares it;</span>
+<span class="sd">    stop words, short tokens and particles never do.</span>
+
+<span class="sd">    &gt;&gt;&gt; name_components(['Rasmus Jensen', 'Mette Jensen'])</span>
+<span class="sd">    {'rasmus': 'Rasmus Jensen', 'mette': 'Mette Jensen'}</span>
+<span class="sd">    """</span>
+    <span class="n">owners</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">full</span> <span class="ow">in</span> <span class="n">full_names</span><span class="p">:</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">full</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">".,"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">NAME_STOPWORDS</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">_PARTICLE</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">owners</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">full</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">owners</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="known_values_detectors">
+<a class="viewcode-back" href="../../_autosummary/nyms.html#nyms.known_values_detectors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">known_values_detectors</span><span class="p">(</span><span class="n">records</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">extra_names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Detector</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Detectors for what a project already knows: its values, their name components, its surrogates.</span>
+
+<span class="sd">    - every original in the mapping, by type: names through :func:`gazetteer_detector` (word</span>
+<span class="sd">      boundaries, genitive), everything else literally;</span>
+<span class="sd">    - for persons, each component (first name or surname) that identifies exactly one known</span>
+<span class="sd">      person, standing for the full name (``Span.value``), scored above a lone first name from</span>
+<span class="sd">      the bundled list so the known person wins;</span>
+<span class="sd">    - every surrogate already issued, as :data:`SURROGATE_TYPE`, so the project's own</span>
+<span class="sd">      surrogates are never re-detected as names when pseudonymised text is processed again.</span>
+<span class="sd">    """</span>
+    <span class="n">recs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">records</span><span class="p">,</span> <span class="s2">"records"</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">records</span><span class="p">)())</span>
+    <span class="n">by_type</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">recs</span><span class="p">:</span>
+        <span class="n">by_type</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">entity_type</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">original</span><span class="p">)</span>
+    <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Detector</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">by_type</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">entity_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"PERSON"</span><span class="p">,</span> <span class="s2">"ORG"</span><span class="p">):</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gazetteer_detector</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"known_values"</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="n">entity_type</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="n">score</span><span class="p">,</span> <span class="n">surname_tail</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">alt</span> <span class="o">=</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Detector</span><span class="p">(</span><span class="s2">"known_values"</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">"(?&lt;![\w])(?:</span><span class="si">{</span><span class="n">alt</span><span class="si">}</span><span class="s2">)(?![\w])"</span><span class="p">),</span> <span class="n">score</span><span class="p">))</span>
+    <span class="n">persons</span> <span class="o">=</span> <span class="n">by_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PERSON"</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="o">|</span> <span class="p">{</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">extra_names</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()}</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="n">name_components</span><span class="p">(</span><span class="n">persons</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">components</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">gazetteer_detector</span><span class="p">(</span>
+                <span class="n">components</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"known_components"</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="s2">"PERSON"</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">surname_tail</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">single_word_score</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+                <span class="n">value_of_name</span><span class="o">=</span><span class="k">lambda</span> <span class="n">text</span><span class="p">:</span> <span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?:'s|’s|s)$"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">casefold</span><span class="p">()),</span> <span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">casefold</span><span class="p">())),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">surrogates</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">r</span><span class="o">.</span><span class="n">surrogate</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recs</span><span class="p">},</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">surrogates</span><span class="p">:</span>
+        <span class="n">alt</span> <span class="o">=</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">surrogates</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Detector</span><span class="p">(</span><span class="s2">"surrogates"</span><span class="p">,</span> <span class="n">SURROGATE_TYPE</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">"(?&lt;![\w])(?:</span><span class="si">{</span><span class="n">alt</span><span class="si">}</span><span class="s2">)(?![\w])"</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

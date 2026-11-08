@@ -1,0 +1,20 @@
+nyms.core
+=========
+
+.. automodule:: nyms.core
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      PROMOTABLE_TYPES
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Pseudonymiser
+      Reidentified
+      Result
+   

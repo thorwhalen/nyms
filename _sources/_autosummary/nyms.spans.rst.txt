@@ -1,0 +1,26 @@
+nyms.spans
+==========
+
+.. automodule:: nyms.spans
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      WEAK_SCORE
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      apply_replacements
+      default_priority
+      resolve_overlaps
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Span
+   

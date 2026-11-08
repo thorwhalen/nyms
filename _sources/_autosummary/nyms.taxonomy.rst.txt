@@ -1,0 +1,24 @@
+nyms.taxonomy
+=============
+
+.. automodule:: nyms.taxonomy
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      SURROGATE_TYPE
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      tier_of
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      EntityType
+   

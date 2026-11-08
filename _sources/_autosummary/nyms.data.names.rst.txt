@@ -1,0 +1,6 @@
+nyms.data.names
+===============
+
+.. automodule:: nyms.data.names
+
+   

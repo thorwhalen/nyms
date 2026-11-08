@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "built_at": "2026-11-08T07:52:18Z",
+  "package": {
+    "name": "nyms",
+    "version": "0.0.1",
+    "display_name": "nyms",
+    "source": "pyproject.toml"
+  },
+  "git": {
+    "available": true,
+    "commit": "662a40aab35829359d43c04ee904c4deacb80406",
+    "short_commit": "662a40a",
+    "branch": "main",
+    "tags": [],
+    "dirty": false,
+    "remote_url": "https://github.com/thorwhalen/nyms",
+    "commit_url": "https://github.com/thorwhalen/nyms/commit/662a40aab35829359d43c04ee904c4deacb80406",
+    "error": null
+  },
+  "ci": {
+    "provider": "github",
+    "repository": "thorwhalen/nyms",
+    "sha": "662a40aab35829359d43c04ee904c4deacb80406",
+    "sha_in_history": true,
+    "ref": "refs/heads/main",
+    "ref_name": "main",
+    "run_id": "42460442417",
+    "run_url": "https://github.com/thorwhalen/nyms/actions/runs/42460442417",
+    "server_url": "https://github.com"
+  },
+  "tools": {
+    "epythet": "0.2.22",
+    "sphinx": "9.1.1",
+    "docutils": "0.22.4",
+    "python": "3.12.16"
+  },
+  "config": {
+    "theme": "auto",
+    "html_theme": "pydata_sphinx_theme",
+    "accent": "#7f4b00",
+    "mode": "auto",
+    "api_generator": "autosummary",
+    "ignore": [
+      "tests/",
+      "scrap/",
+      "examples/"
+    ],
+    "agent_outputs": true,
+    "aggregates": [
+      "md"
+    ],
+    "ai_artifacts": true,
+    "provenance": true,
+    "docs_dir": "docsrc"
+  },
+  "site": {
+    "modules_documented": 12,
+    "objects_documented": 97
+  },
+  "pypi": {
+    "checked": true,
+    "latest": null,
+    "relation": "unknown",
+    "error": null
+  },
+  "reproduce": "git clone https://github.com/thorwhalen/nyms && cd nyms\ngit checkout 662a40aab35829359d43c04ee904c4deacb80406\npip install \"epythet==0.2.22\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
+  "warnings": [],
+  "alignment": {
+    "aligned": true,
+    "notes": []
+  }
+}

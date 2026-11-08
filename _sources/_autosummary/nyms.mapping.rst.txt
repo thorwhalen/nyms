@@ -1,0 +1,29 @@
+nyms.mapping
+============
+
+.. automodule:: nyms.mapping
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      canon
+      encrypted
+      local_mapping_store
+      normalise
+      project_dir
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      MappingStore
+      Record
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      StoreError
+   
